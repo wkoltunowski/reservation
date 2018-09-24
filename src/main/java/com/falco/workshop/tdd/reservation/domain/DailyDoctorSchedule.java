@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation;
+package com.falco.workshop.tdd.reservation.domain;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

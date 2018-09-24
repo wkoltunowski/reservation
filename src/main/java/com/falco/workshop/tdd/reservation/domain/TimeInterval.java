@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation;
+package com.falco.workshop.tdd.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,6 +45,8 @@ public class TimeInterval {
     }
 
     public static TimeInterval parse(String fromTo) {
-        return new TimeInterval(LocalTime.parse(fromTo.split("-")[0]), LocalTime.parse(fromTo.split("-")[1]));
+        String[] fromToSplitted = fromTo.split("-");
+        return new TimeInterval(LocalTime.parse(fromToSplitted[0]), LocalTime.parse(fromToSplitted[1])
+        );
     }
 }

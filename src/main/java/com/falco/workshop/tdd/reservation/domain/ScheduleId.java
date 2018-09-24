@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation;
+package com.falco.workshop.tdd.reservation.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

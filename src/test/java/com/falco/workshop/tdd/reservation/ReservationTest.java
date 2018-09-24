@@ -1,11 +1,12 @@
 package com.falco.workshop.tdd.reservation;
 
+import com.falco.workshop.tdd.reservation.domain.*;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.falco.workshop.tdd.reservation.DailyDoctorSchedule.dailyDoctorSchedule;
+import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
 
