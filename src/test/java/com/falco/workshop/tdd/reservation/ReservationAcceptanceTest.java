@@ -38,16 +38,16 @@ public class ReservationAcceptanceTest {
     @Test
     public void shouldReserveSlot() {
         given(dailyDoctorSchedule(DOC_SMITH, TimeInterval.parse("08:00-09:15"), ofMinutes(15)));
-        reserveSlot(slot(DOC_SMITH, "2018-09-02 09:00-09:15"), KOWALSKI);
+        reserveSlot(KOWALSKI, slot(DOC_SMITH, "2018-09-02 09:00-09:15"));
         assertThat(findFreeSlots("2018-09-02 09:00")).isEmpty();
     }
 
     @Test
     public void shouldFindReservations() {
         given(dailyDoctorSchedule(DOC_SMITH, TimeInterval.parse("08:00-09:15"), ofMinutes(15)));
-        reserveSlot(slot(DOC_SMITH, "2018-09-02 08:00-08:15"), KOWALSKI);
-        reserveSlot(slot(DOC_SMITH, "2018-09-02 08:15-08:30"), PIOTROWSKI);
-        reserveSlot(slot(DOC_SMITH, "2018-09-02 08:30-08:45"), MALINOWSKI);
+        reserveSlot(KOWALSKI, slot(DOC_SMITH, "2018-09-02 08:00-08:15"));
+        reserveSlot(PIOTROWSKI, slot(DOC_SMITH, "2018-09-02 08:15-08:30"));
+        reserveSlot(MALINOWSKI, slot(DOC_SMITH, "2018-09-02 08:30-08:45"));
         assertThat(findReservations("2018-09-02")).containsOnly(
                 reservationDetails(KOWALSKI, slot(DOC_SMITH, "2018-09-02 08:00-08:15")),
                 reservationDetails(PIOTROWSKI, slot(DOC_SMITH, "2018-09-02 08:15-08:30")),
@@ -59,8 +59,8 @@ public class ReservationAcceptanceTest {
         return application.findReservationsFor(day);
     }
 
-    private void reserveSlot(Slot slot, PatientId patientId) {
-        application.reserveSlot(slot, patientId);
+    private void reserveSlot(PatientId patientId, Slot slot) {
+        application.reserveSlot(patientId, slot);
     }
 
     private List<Slot> findFreeSlots(String startingFrom) {
