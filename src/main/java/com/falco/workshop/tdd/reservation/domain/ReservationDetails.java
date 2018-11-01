@@ -5,11 +5,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ScheduleId {
-    private final String id;
+public class ReservationDetails {
+    private final Slot slot;
+    private final PatientId patient;
 
-    public ScheduleId(String id) {
-        this.id = id;
+    public ReservationDetails(PatientId patient, Slot slot) {
+        this.patient = patient;
+        this.slot = slot;
     }
 
     @Override
@@ -25,5 +27,13 @@ public class ScheduleId {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static ReservationDetails reservationDetails(PatientId patientId, Slot slot) {
+        return new ReservationDetails(patientId, slot);
+    }
+
+    public Slot slot() {
+        return this.slot;
     }
 }

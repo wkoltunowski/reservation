@@ -32,6 +32,9 @@ public class Slot {
     public static Slot slot(ScheduleId scheduleId, DateInterval interval) {
         return new Slot(scheduleId, interval);
     }
+    public static Slot slot(ScheduleId scheduleId, String dayFromTo) {
+        return Slot.slot(scheduleId, DateInterval.parse(dayFromTo));
+    }
 
     public ScheduleId id() {
         return id;

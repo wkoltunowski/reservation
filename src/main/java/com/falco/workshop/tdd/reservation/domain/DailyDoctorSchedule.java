@@ -23,6 +23,9 @@ public class DailyDoctorSchedule {
         DateInterval scheduleInterval = workingHours.toDateInterval(startingFrom.toLocalDate());
         DateInterval slotInterval = DateInterval.parse(scheduleInterval.start(), visitDuration);
         Slot slot = slotFor(slotInterval);
+        while (slot.interval().start().isBefore(startingFrom)) {
+            slot = Slot.slot(slot.id(), slot.interval().plus(visitDuration));
+        }
 
         while (scheduleInterval.encloses(slot.interval()) && !reservedSlots.contains(slot)) {
             slots.add(slot);
