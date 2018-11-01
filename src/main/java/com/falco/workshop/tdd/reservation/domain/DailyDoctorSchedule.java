@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation.domain;
 
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,5 +45,9 @@ public class DailyDoctorSchedule {
 
     public void reserveSlot(Slot slot) {
         reservedSlots.add(slot);
+    }
+
+    public ScheduleId id() {
+        return id;
     }
 }

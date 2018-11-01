@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation.domain;
 
+import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 
 import java.time.Duration;
@@ -36,7 +37,15 @@ public class DateInterval {
     }
 
     public boolean encloses(DateInterval slotInterval) {
-        return Ranges.closedOpen(start, end).encloses(Ranges.closedOpen(slotInterval.start, slotInterval.end));
+        return range().encloses(slotInterval.range());
+    }
+
+    private Range<LocalDateTime> range() {
+        return Ranges.closedOpen(start, end);
+    }
+
+    public boolean intersects(DateInterval interval) {
+        return !range().intersection(interval.range()).isEmpty();
     }
 
     public DateInterval plus(Duration duration) {
@@ -50,9 +59,12 @@ public class DateInterval {
     public static DateInterval parse(String dayFromTo) {
         return parse(LocalDate.parse(dayFromTo.split(" ")[0]), TimeInterval.parse(dayFromTo.split(" ")[1]));
     }
-
     public static DateInterval parse(LocalDateTime start, Duration duration) {
         return new DateInterval(start, start.plus(duration));
+    }
+
+    public static DateInterval parse(LocalDateTime start, LocalDateTime end){
+        return new DateInterval(start,end);
     }
 
     public LocalDateTime start() {

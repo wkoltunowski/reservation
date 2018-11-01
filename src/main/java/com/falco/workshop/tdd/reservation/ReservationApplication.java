@@ -1,39 +1,43 @@
 package com.falco.workshop.tdd.reservation;
 
 import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.infrastructure.InMemoryReservationRepository;
+import com.falco.workshop.tdd.reservation.infrastructure.InMemoryScheduleRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
 public class ReservationApplication {
-    private DailyDoctorSchedule schedule;
-    private Map<ReservationId, ReservationDetails> reservations = new HashMap<>();
+    private ScheduleRepository scheduleRepository = new InMemoryScheduleRepository();
+    private ReservationRepository reservationRepository = new InMemoryReservationRepository();
 
     public static ReservationApplication start() {
         return new ReservationApplication();
     }
 
     public void defineSchedule(DailyDoctorSchedule schedule) {
-        this.schedule = schedule;
+        this.scheduleRepository.save(schedule);
     }
 
     public List<Slot> findFreeSlots(LocalDateTime startingFrom) {
-        return schedule.findFreeSlots(startingFrom);
+        return this.scheduleRepository
+                .findAll().stream()
+                .flatMap(schedule -> schedule.findFreeSlots(startingFrom).stream())
+                .collect(toList());
     }
 
     public ReservationId reserveSlot(Slot slot, PatientId patientId) {
-        ReservationId reservationId = ReservationId.newId();
+        DailyDoctorSchedule schedule = scheduleRepository.findById(slot.id());
         schedule.reserveSlot(slot);
-        reservations.put(reservationId, ReservationDetails.reservationDetails(patientId, slot));
-        return reservationId;
+        scheduleRepository.update(schedule);
+        Reservation reservation = Reservation.reservation(ReservationDetails.reservationDetails(patientId, slot));
+        reservationRepository.save(reservation);
+        return reservation.id();
     }
 
     public List<ReservationDetails> findReservationsFor(String day) {
-        return reservations.values().stream().filter(r -> r.slot().interval().start().toLocalDate().equals(LocalDate.parse(day))).collect(toList());
+        return reservationRepository.findReservations(DateInterval.parse(day + " 00:00-23:59")).stream().map(Reservation::details).collect(toList());
     }
 }
