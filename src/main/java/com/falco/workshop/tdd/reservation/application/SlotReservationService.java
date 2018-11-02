@@ -1,23 +1,19 @@
 package com.falco.workshop.tdd.reservation.application;
 
-import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.ScheduleRepository;
+import com.falco.workshop.tdd.reservation.domain.Slot;
 
 public class SlotReservationService {
     private final ScheduleRepository scheduleRepository;
-    private final ReservationRepository reservationRepository;
 
-    public SlotReservationService(ScheduleRepository scheduleRepository, ReservationRepository reservationRepository) {
+    public SlotReservationService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
-        this.reservationRepository = reservationRepository;
     }
 
-    public ReservationId reserveSlot(Reservation reservation) {
-        DailyDoctorSchedule schedule = scheduleRepository.findById(reservation.details().slot().id());
-        schedule.reserveSlot(reservation.details().slot());
+    public void reserveSlot(Slot slot) {
+        DailyDoctorSchedule schedule = scheduleRepository.findById(slot.id());
+        schedule.reserveSlot(slot);
         scheduleRepository.update(schedule);
-
-        reservationRepository.save(reservation);
-        return reservation.id();
-
     }
 }

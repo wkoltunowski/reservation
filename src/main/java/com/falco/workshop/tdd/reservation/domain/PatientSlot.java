@@ -5,11 +5,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ReservationDetails {
+public class PatientSlot {
     private final Slot slot;
     private final PatientId patient;
 
-    public ReservationDetails(PatientId patient, Slot slot) {
+    private PatientSlot(PatientId patient, Slot slot) {
         this.patient = patient;
         this.slot = slot;
     }
@@ -29,8 +29,8 @@ public class ReservationDetails {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static ReservationDetails reservationDetails(PatientId patientId, Slot slot) {
-        return new ReservationDetails(patientId, slot);
+    public static PatientSlot reservationDetails(PatientId patientId, Slot slot) {
+        return new PatientSlot(patientId, slot);
     }
 
     public Slot slot() {

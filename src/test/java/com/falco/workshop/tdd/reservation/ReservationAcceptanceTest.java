@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
-import static com.falco.workshop.tdd.reservation.domain.ReservationDetails.reservationDetails;
+import static com.falco.workshop.tdd.reservation.domain.PatientSlot.reservationDetails;
 import static com.falco.workshop.tdd.reservation.domain.Slot.slot;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +55,7 @@ public class ReservationAcceptanceTest {
         );
     }
 
-    private List<ReservationDetails> findReservations(String day) {
+    private List<PatientSlot> findReservations(String day) {
         return application.findReservationsFor(day);
     }
 

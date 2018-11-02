@@ -3,7 +3,7 @@ package com.falco.workshop.tdd.reservation.domain;
 import java.util.List;
 
 public interface ReservationRepository {
-    void save(Reservation reservation);
+    void save(PatientReservation patientReservation);
 
-    List<Reservation> findReservations(DateInterval interval);
+    List<PatientReservation> findReservations(DateInterval interval);
 }
