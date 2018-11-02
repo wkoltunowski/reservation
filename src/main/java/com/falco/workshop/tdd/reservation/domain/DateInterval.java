@@ -50,7 +50,7 @@ public class DateInterval {
     }
 
     public boolean intersects(DateInterval interval) {
-        return !range().intersection(interval.range()).isEmpty();
+        return range().isConnected(interval.range()) && !range().intersection(interval.range()).isEmpty();
     }
 
     public DateInterval plus(Duration duration) {
@@ -79,5 +79,9 @@ public class DateInterval {
 
     public LocalDateTime end() {
         return end;
+    }
+
+    public boolean isEmpty() {
+        return !end.isAfter(start);
     }
 }
