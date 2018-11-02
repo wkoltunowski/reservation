@@ -2,10 +2,9 @@ package com.falco.workshop.tdd.reservation;
 
 import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
-import com.falco.workshop.tdd.reservation.application.SlotReservationService;
 import com.falco.workshop.tdd.reservation.domain.*;
-import com.falco.workshop.tdd.reservation.infrastructure.InMemoryReservationRepository;
-import com.falco.workshop.tdd.reservation.infrastructure.InMemoryScheduleRepository;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,10 +14,19 @@ import static com.falco.workshop.tdd.reservation.domain.PatientSlot.reservationD
 import static java.util.stream.Collectors.toList;
 
 public class ReservationApplication {
-    private ScheduleRepository scheduleRepository = new InMemoryScheduleRepository();
-    private ReservationRepository reservationRepository = new InMemoryReservationRepository();
-    private PatientReservationService patientReservationService = new PatientReservationService(reservationRepository, new SlotReservationService(scheduleRepository));
-    private FindFreeSlotsService findFreeSlotsService = new FindFreeSlotsService(scheduleRepository);
+    private final ScheduleRepository scheduleRepository;
+    private final ReservationRepository reservationRepository;
+    private final PatientReservationService patientReservationService;
+    private final FindFreeSlotsService findFreeSlotsService;
+    private final ConfigurableApplicationContext context;
+
+    public ReservationApplication() {
+        context = SpringApplication.run(SpringApplicationRunner.class);
+        scheduleRepository = context.getBean(ScheduleRepository.class);
+        reservationRepository = context.getBean(ReservationRepository.class);
+        patientReservationService = context.getBean(PatientReservationService.class);
+        findFreeSlotsService = context.getBean(FindFreeSlotsService.class);
+    }
 
     public static ReservationApplication start() {
         return new ReservationApplication();
@@ -38,5 +46,9 @@ public class ReservationApplication {
 
     public List<PatientSlot> findReservationsFor(String day) {
         return reservationRepository.findReservations(DateInterval.parse(day + " 00:00-23:59")).stream().map(PatientReservation::details).collect(toList());
+    }
+
+    public void stop() {
+        context.close();
     }
 }

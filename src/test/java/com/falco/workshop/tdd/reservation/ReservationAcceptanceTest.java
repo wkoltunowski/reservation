@@ -1,6 +1,7 @@
 package com.falco.workshop.tdd.reservation;
 
 import com.falco.workshop.tdd.reservation.domain.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +24,11 @@ public class ReservationAcceptanceTest {
     @Before
     public void setUp() {
         application = ReservationApplication.start();
+    }
+
+    @After
+    public void tearDown() {
+        application.stop();
     }
 
     @Test

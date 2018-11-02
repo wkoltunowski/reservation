@@ -4,10 +4,12 @@ import com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule;
 import com.falco.workshop.tdd.reservation.domain.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.ScheduleRepository;
 import com.google.common.collect.ImmutableList;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class InMemoryScheduleRepository implements ScheduleRepository {
 
     private List<DailyDoctorSchedule> schedules = new ArrayList<>();
