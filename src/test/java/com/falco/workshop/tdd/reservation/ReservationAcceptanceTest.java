@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReservationAcceptanceTest {
     private static final ScheduleId DOC_SMITH = new ScheduleId("dr. Smith, John");
-    private static final PatientId MALINOWSKI = new PatientId("Piotrowski, Jan");
+    private static final PatientId MALINOWSKI = new PatientId("Malinowski, Jan");
     private static final PatientId KOWALSKI = new PatientId("Kowalski, Jan");
-    private static final PatientId PIOTROWSKI = new PatientId("Malinowski, Jan");
+    private static final PatientId PIOTROWSKI = new PatientId("Piotrowski, Jan");
     private ReservationApplication application;
 
     @Before

@@ -1,10 +1,11 @@
 package com.falco.workshop.tdd.reservation.application;
 
-import com.falco.workshop.tdd.reservation.domain.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.PatientSlot;
 import com.falco.workshop.tdd.reservation.domain.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static com.falco.workshop.tdd.reservation.domain.PatientReservation.reservation;
 
 @Component
 public class PatientReservationService {
@@ -20,12 +21,8 @@ public class PatientReservationService {
 
     public void reserve(PatientSlot patientSlot) {
         slotReservationService.reserveSlot(patientSlot.slot());
-        saveReservation(patientSlot);
+        reservationRepository.save(reservation(patientSlot));
     }
 
 
-    private void saveReservation(PatientSlot patientSlot) {
-        PatientReservation reservation = PatientReservation.reservation(patientSlot);
-        reservationRepository.save(reservation);
-    }
 }

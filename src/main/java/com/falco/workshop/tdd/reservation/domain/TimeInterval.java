@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation.domain;
 
+import javax.persistence.Embeddable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -8,11 +9,15 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
+@Embeddable
 public class TimeInterval {
-    private final LocalTime start;
-    private final LocalTime end;
+    private LocalTime start;
+    private LocalTime end;
 
-    public TimeInterval(LocalTime start, LocalTime end) {
+    TimeInterval() {
+    }
+
+    TimeInterval(LocalTime start, LocalTime end) {
         this.start = start;
         this.end = end;
     }
