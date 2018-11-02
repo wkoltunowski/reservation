@@ -10,7 +10,6 @@ public class DailyDoctorSchedule {
     private final ScheduleId id;
     private final Duration visitDuration;
     private final TimeInterval workingHours;
-    private List<Slot> reservedSlots = new ArrayList<>();
 
     public DailyDoctorSchedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration) {
         this.id = scheduleId;
@@ -18,17 +17,26 @@ public class DailyDoctorSchedule {
         this.workingHours = workingHours;
     }
 
-    public List<Slot> findFreeSlots(LocalDateTime startingFrom) {
+    public List<Slot> generateSlots(DateInterval interval) {
         List<Slot> slots = new ArrayList<>();
+        LocalDateTime day = interval.start();
+        while (!day.isAfter(interval.end())) {
+            slots.addAll(dailySlots(day));
+            day = day.plusDays(1);
+        }
+        return slots;
+    }
 
-        DateInterval scheduleInterval = workingHours.toDateInterval(startingFrom.toLocalDate());
+    private List<Slot> dailySlots(LocalDateTime day) {
+        List<Slot> slots = new ArrayList<>();
+        DateInterval scheduleInterval = workingHours.toDateInterval(day.toLocalDate());
         DateInterval slotInterval = DateInterval.parse(scheduleInterval.start(), visitDuration);
         Slot slot = slotFor(slotInterval);
-        while (slot.interval().start().isBefore(startingFrom)) {
+        while (slot.interval().start().isBefore(day)) {
             slot = Slot.slot(slot.id(), slot.interval().plus(visitDuration));
         }
 
-        while (scheduleInterval.encloses(slot.interval()) && !reservedSlots.contains(slot)) {
+        while (scheduleInterval.encloses(slot.interval())) {
             slots.add(slot);
             slot = Slot.slot(slot.id(), slot.interval().plus(visitDuration));
         }
@@ -41,10 +49,6 @@ public class DailyDoctorSchedule {
 
     public static DailyDoctorSchedule dailyDoctorSchedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration) {
         return new DailyDoctorSchedule(scheduleId, workingHours, visitDuration);
-    }
-
-    public void reserveSlot(Slot slot) {
-        reservedSlots.add(slot);
     }
 
     public ScheduleId id() {
