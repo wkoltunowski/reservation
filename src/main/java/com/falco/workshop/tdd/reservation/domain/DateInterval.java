@@ -3,6 +3,7 @@ package com.falco.workshop.tdd.reservation.domain;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 
+import javax.persistence.Embeddable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,11 +13,15 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
+@Embeddable
 public class DateInterval {
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+    private LocalDateTime start;
+    private LocalDateTime end;
 
-    public DateInterval(LocalDateTime start, LocalDateTime end) {
+    DateInterval() {
+    }
+
+    DateInterval(LocalDateTime start, LocalDateTime end) {
         this.start = start;
         this.end = end;
     }
@@ -59,15 +64,20 @@ public class DateInterval {
     public static DateInterval parse(String dayFromTo) {
         return parse(LocalDate.parse(dayFromTo.split(" ")[0]), TimeInterval.parse(dayFromTo.split(" ")[1]));
     }
+
     public static DateInterval parse(LocalDateTime start, Duration duration) {
         return new DateInterval(start, start.plus(duration));
     }
 
-    public static DateInterval parse(LocalDateTime start, LocalDateTime end){
-        return new DateInterval(start,end);
+    public static DateInterval parse(LocalDateTime start, LocalDateTime end) {
+        return new DateInterval(start, end);
     }
 
     public LocalDateTime start() {
         return start;
+    }
+
+    public LocalDateTime end() {
+        return end;
     }
 }

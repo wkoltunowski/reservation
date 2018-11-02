@@ -5,11 +5,17 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ScheduleId {
-    private final String id;
+import javax.persistence.Embeddable;
 
-    public ScheduleId(String id) {
-        this.id = id;
+@Embeddable
+public class ScheduleId {
+    private String scheduleId;
+
+    ScheduleId() {
+    }
+
+    public ScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     @Override

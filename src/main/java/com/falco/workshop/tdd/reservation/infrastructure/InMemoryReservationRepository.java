@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class InMemoryReservationRepository implements ReservationRepository {
     private List<PatientReservation> patientReservations = new ArrayList<>();
 

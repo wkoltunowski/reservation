@@ -5,9 +5,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class PatientSlot {
-    private final Slot slot;
-    private final PatientId patient;
+    private Slot slot;
+    private PatientId patient;
+
+    public PatientSlot() {
+    }
 
     private PatientSlot(PatientId patient, Slot slot) {
         this.patient = patient;

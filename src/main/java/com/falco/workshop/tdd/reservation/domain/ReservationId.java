@@ -5,13 +5,20 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.util.UUID;
 
-public class ReservationId {
-    private final UUID id;
+@Embeddable
+public class ReservationId implements Serializable {
+    private final UUID uuid;
 
-    public ReservationId(UUID uuid) {
-        this.id = uuid;
+    ReservationId() {
+        uuid = UUID.randomUUID();
+    }
+
+    ReservationId(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override
@@ -30,6 +37,6 @@ public class ReservationId {
     }
 
     public static ReservationId newId() {
-        return new ReservationId(UUID.randomUUID());
+        return new ReservationId();
     }
 }

@@ -1,16 +1,22 @@
 package com.falco.workshop.tdd.reservation.domain;
 
+import javax.persistence.Embeddable;
+
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
+@Embeddable
 public class Slot {
-    private final ScheduleId id;
-    private final DateInterval interval;
+    private ScheduleId scheduleId;
+    private DateInterval interval;
 
-    public Slot(ScheduleId scheduleId, DateInterval dateInterval) {
-        this.id = scheduleId;
+    Slot() {
+    }
+
+    Slot(ScheduleId scheduleId, DateInterval dateInterval) {
+        this.scheduleId = scheduleId;
         this.interval = dateInterval;
     }
 
@@ -32,12 +38,13 @@ public class Slot {
     public static Slot slot(ScheduleId scheduleId, DateInterval interval) {
         return new Slot(scheduleId, interval);
     }
+
     public static Slot slot(ScheduleId scheduleId, String dayFromTo) {
         return Slot.slot(scheduleId, DateInterval.parse(dayFromTo));
     }
 
     public ScheduleId id() {
-        return id;
+        return scheduleId;
     }
 
     public DateInterval interval() {

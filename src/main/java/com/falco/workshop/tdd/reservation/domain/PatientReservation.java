@@ -1,11 +1,22 @@
 package com.falco.workshop.tdd.reservation.domain;
 
-public class PatientReservation {
-    private final PatientSlot details;
-    private final ReservationId id;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-    private PatientReservation(ReservationId id, PatientSlot details) {
-        this.id = id;
+@Entity
+public class PatientReservation {
+    private PatientSlot details;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private ReservationId reservationId;
+
+    PatientReservation() {
+    }
+
+    private PatientReservation(ReservationId reservationId, PatientSlot details) {
+        this.reservationId = reservationId;
         this.details = details;
     }
 
@@ -14,7 +25,7 @@ public class PatientReservation {
     }
 
     public ReservationId id() {
-        return id;
+        return reservationId;
     }
 
     public PatientSlot details() {
