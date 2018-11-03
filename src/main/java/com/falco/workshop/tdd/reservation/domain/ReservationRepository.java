@@ -6,4 +6,6 @@ public interface ReservationRepository {
     void save(PatientReservation patientReservation);
 
     List<PatientReservation> findReservations(DateInterval interval);
+
+    List<PatientReservation> findByScheduleId(ScheduleId scheduleId);
 }

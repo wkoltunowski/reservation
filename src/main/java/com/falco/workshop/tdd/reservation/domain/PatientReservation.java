@@ -1,27 +1,14 @@
 package com.falco.workshop.tdd.reservation.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
 public class PatientReservation {
+    private final ReservationId reservationId;
     private PatientSlot details;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private ReservationId reservationId;
-
-    PatientReservation() {
-    }
+    private ReservationStatus status;
 
     private PatientReservation(ReservationId reservationId, PatientSlot details) {
         this.reservationId = reservationId;
         this.details = details;
-    }
-
-    public static PatientReservation reservation(PatientSlot patientSlot) {
-        return new PatientReservation(ReservationId.newId(), patientSlot);
+        this.status = ReservationStatus.RESERVED;
     }
 
     public ReservationId id() {
@@ -30,5 +17,17 @@ public class PatientReservation {
 
     public PatientSlot details() {
         return details;
+    }
+
+    public void cancel() {
+        this.status = ReservationStatus.CANCELLED;
+    }
+
+    public static PatientReservation reservation(PatientSlot patientSlot) {
+        return new PatientReservation(null, patientSlot);
+    }
+
+    public static PatientReservation reservation(ReservationId reservationId, PatientSlot patientSlot) {
+        return new PatientReservation(reservationId, patientSlot);
     }
 }

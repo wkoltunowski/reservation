@@ -5,18 +5,17 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Embeddable
 public class ScheduleId implements Serializable {
-    private String scheduleId;
+    private Long scheduleId;
 
-    ScheduleId() {
+    public Long id() {
+        return scheduleId;
     }
 
-    public ScheduleId(String scheduleId) {
-        this.scheduleId = scheduleId;
+    public ScheduleId(long id) {
+        this.scheduleId = id;
     }
 
     @Override
@@ -32,5 +31,9 @@ public class ScheduleId implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static ScheduleId newId(int i) {
+        return new ScheduleId(i);
     }
 }

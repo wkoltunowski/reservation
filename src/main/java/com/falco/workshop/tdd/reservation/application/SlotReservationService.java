@@ -15,7 +15,7 @@ public class SlotReservationService {
     }
 
     public void reserveSlot(Slot slot) {
-        Slot oldSlot = freeSlotRepository.findById(slot.id(), slot.interval().start());
+        Slot oldSlot = freeSlotRepository.findById(slot.id(), slot.interval());
         freeSlotRepository.delete(oldSlot);
         freeSlotRepository.saveAll(oldSlot.splitBy(slot));
     }

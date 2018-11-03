@@ -3,7 +3,6 @@ package com.falco.workshop.tdd.reservation.domain;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 
-import javax.persistence.Embeddable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,32 +12,13 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-@Embeddable
 public class DateInterval {
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private final LocalDateTime start;
+    private final LocalDateTime end;
 
-    DateInterval() {
-    }
-
-    DateInterval(LocalDateTime start, LocalDateTime end) {
+    private DateInterval(LocalDateTime start, LocalDateTime end) {
         this.start = start;
         this.end = end;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return reflectionEquals(this, o);
-    }
-
-    @Override
-    public int hashCode() {
-        return reflectionHashCode(this);
-    }
-
-    @Override
-    public String toString() {
-        return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
     public boolean encloses(DateInterval slotInterval) {
@@ -55,6 +35,21 @@ public class DateInterval {
 
     public DateInterval plus(Duration duration) {
         return new DateInterval(start.plus(duration), end.plus(duration));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
     public static DateInterval parse(LocalDate day, TimeInterval timeInterval) {

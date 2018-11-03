@@ -10,7 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.falco.workshop.tdd.reservation.domain.PatientSlot.reservationDetails;
+import static com.falco.workshop.tdd.reservation.domain.PatientSlot.patientSlot;
 import static java.util.stream.Collectors.toList;
 
 public class ReservationApplication {
@@ -45,7 +45,7 @@ public class ReservationApplication {
     }
 
     public void reserveSlot(PatientId patientId, Slot slot) {
-        patientReservationService.reserve(reservationDetails(patientId, slot));
+        patientReservationService.reserve(patientSlot(patientId, slot));
     }
 
     public List<PatientSlot> findReservationsFor(String day) {

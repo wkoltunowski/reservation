@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
-import static com.falco.workshop.tdd.reservation.domain.PatientSlot.reservationDetails;
+import static com.falco.workshop.tdd.reservation.domain.PatientSlot.patientSlot;
 import static com.falco.workshop.tdd.reservation.domain.Slot.slot;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReservationAcceptanceTest {
-    private static final ScheduleId DOC_SMITH = new ScheduleId("dr. Smith, John");
+    private static final ScheduleId DOC_SMITH = ScheduleId.newId(1);
     private static final PatientId MALINOWSKI = new PatientId("Malinowski, Jan");
     private static final PatientId KOWALSKI = new PatientId("Kowalski, Jan");
     private static final PatientId PIOTROWSKI = new PatientId("Piotrowski, Jan");
@@ -55,9 +55,9 @@ public class ReservationAcceptanceTest {
         reserveSlot(PIOTROWSKI, slot(DOC_SMITH, "2018-09-02 08:15-08:30"));
         reserveSlot(MALINOWSKI, slot(DOC_SMITH, "2018-09-02 08:30-08:45"));
         assertThat(findReservations("2018-09-02")).containsOnly(
-                reservationDetails(KOWALSKI, slot(DOC_SMITH, "2018-09-02 08:00-08:15")),
-                reservationDetails(PIOTROWSKI, slot(DOC_SMITH, "2018-09-02 08:15-08:30")),
-                reservationDetails(MALINOWSKI, slot(DOC_SMITH, "2018-09-02 08:30-08:45"))
+                patientSlot(KOWALSKI, slot(DOC_SMITH, "2018-09-02 08:00-08:15")),
+                patientSlot(PIOTROWSKI, slot(DOC_SMITH, "2018-09-02 08:15-08:30")),
+                patientSlot(MALINOWSKI, slot(DOC_SMITH, "2018-09-02 08:30-08:45"))
         );
     }
 

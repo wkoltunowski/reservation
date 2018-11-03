@@ -2,8 +2,8 @@ package com.falco.workshop.tdd.reservation.domain;
 
 import com.google.common.collect.ImmutableList;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
@@ -11,17 +11,50 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-@Embeddable
 public class Slot {
-    private ScheduleId scheduleId;
-    private DateInterval interval;
+    private final ScheduleId scheduleId;
+    private final DateInterval interval;
 
-    Slot() {
-    }
-
-    Slot(ScheduleId scheduleId, DateInterval dateInterval) {
+    private Slot(ScheduleId scheduleId, DateInterval dateInterval) {
         this.scheduleId = scheduleId;
         this.interval = dateInterval;
+    }
+
+    public ScheduleId id() {
+        return scheduleId;
+    }
+
+    public DateInterval interval() {
+        return interval;
+    }
+
+    public List<Slot> splitBy(Slot slot) {
+        Slot before = Slot.slot(scheduleId, DateInterval.parse(interval.start(), slot.interval().start()));
+        Slot after = Slot.slot(scheduleId, DateInterval.parse(slot.interval().end(), (interval.end())));
+        if (!before.isEmpty() && !after.isEmpty()) {
+            return ImmutableList.of(before, after);
+        }
+        if (!before.isEmpty()) {
+            return ImmutableList.of(before);
+        }
+        if (!after.isEmpty()) {
+            return ImmutableList.of(after);
+        }
+        return ImmutableList.of();
+    }
+
+    private boolean isEmpty() {
+        return interval().isEmpty();
+    }
+
+    public List<Slot> splitBy(Duration duration) {
+        DateInterval slotInterval = DateInterval.parse(interval.start(), interval.start().plus(duration));
+        List<Slot> slots = new ArrayList<>();
+        while (interval().encloses(slotInterval)) {
+            slots.add(Slot.slot(scheduleId, slotInterval));
+            slotInterval = DateInterval.parse(slotInterval.end(), slotInterval.end().plus(duration));
+        }
+        return slots;
     }
 
     @Override
@@ -45,32 +78,5 @@ public class Slot {
 
     public static Slot slot(ScheduleId scheduleId, String dayFromTo) {
         return Slot.slot(scheduleId, DateInterval.parse(dayFromTo));
-    }
-
-    public ScheduleId id() {
-        return scheduleId;
-    }
-
-    public DateInterval interval() {
-        return interval;
-    }
-
-    public List<Slot> splitBy(Slot slot) {
-        Slot before = Slot.slot(scheduleId, DateInterval.parse(interval.start(), slot.interval().start()));
-        Slot after = Slot.slot(scheduleId, DateInterval.parse(slot.interval().end(), slot.interval().end()));
-        if (!before.isEmpty() && !after.isEmpty()) {
-            return ImmutableList.of(before, after);
-        }
-        if (!before.isEmpty()) {
-            return ImmutableList.of(before);
-        }
-        if (!after.isEmpty()) {
-            return ImmutableList.of(after);
-        }
-        return ImmutableList.of();
-    }
-
-    private boolean isEmpty() {
-        return interval().isEmpty();
     }
 }

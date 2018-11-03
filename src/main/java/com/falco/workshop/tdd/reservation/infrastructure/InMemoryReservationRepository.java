@@ -3,11 +3,12 @@ package com.falco.workshop.tdd.reservation.infrastructure;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.ReservationRepository;
-import org.springframework.stereotype.Component;
+import com.falco.workshop.tdd.reservation.domain.ScheduleId;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 //@Component
 public class InMemoryReservationRepository implements ReservationRepository {
@@ -22,6 +23,11 @@ public class InMemoryReservationRepository implements ReservationRepository {
     public List<PatientReservation> findReservations(DateInterval interval) {
         return patientReservations.stream()
                 .filter(r -> interval.intersects(r.details().slot().interval()))
-                .collect(Collectors.toList());
+                .collect(toList());
+    }
+
+    @Override
+    public List<PatientReservation> findByScheduleId(ScheduleId scheduleId) {
+        return patientReservations.stream().filter(r -> r.details().slot().id().equals(scheduleId)).collect(toList());
     }
 }

@@ -39,18 +39,18 @@ public class SpringFreeSlotRepository implements FreeSlotRepository {
     }
 
     @Override
-    public Slot findById(ScheduleId id, LocalDateTime start) {
-        return crudFreeSlotRepository.findOne(new FreeSlot.Id(id, start)).toSlot();
+    public Slot findById(ScheduleId id, DateInterval interval) {
+        return crudFreeSlotRepository.findIntersectingById(id.id(), interval.start(), interval.end()).toSlot();
     }
 
     @Override
     public void delete(Slot slot) {
-        crudFreeSlotRepository.delete(new FreeSlot.Id(slot.id(), slot.interval().start()));
+        crudFreeSlotRepository.deleteById(new FreeSlot.Id(slot.id(), slot.interval().start()));
     }
 
     @Override
     public void saveAll(List<Slot> slots) {
-        crudFreeSlotRepository.save(slots.stream().map(FreeSlot::new).collect(toList()));
+        crudFreeSlotRepository.saveAll(slots.stream().map(FreeSlot::new).collect(toList()));
     }
 }
 
@@ -70,19 +70,19 @@ class FreeSlot {
     }
 
     public Slot toSlot() {
-        return Slot.slot(freeSlotId.scheduleId, DateInterval.parse(freeSlotId.start, end));
+        return Slot.slot(new ScheduleId(freeSlotId.scheduleId), DateInterval.parse(freeSlotId.start, end));
     }
 
     @Embeddable
     static class Id implements Serializable {
-        private ScheduleId scheduleId;
+        private Long scheduleId;
         private LocalDateTime start;
 
         Id() {
         }
 
         Id(ScheduleId scheduleId, LocalDateTime start) {
-            this.scheduleId = scheduleId;
+            this.scheduleId = scheduleId.id();
             this.start = start;
         }
     }
@@ -92,4 +92,7 @@ class FreeSlot {
 interface CrudFreeSlotRepository extends CrudRepository<FreeSlot, FreeSlot.Id> {
     @Query("SELECT fs FROM FreeSlot fs WHERE fs.freeSlotId.start <= :end and fs.end > :start")
     Iterable<FreeSlot> findIntersecting(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT fs FROM FreeSlot fs WHERE fs.freeSlotId.start <= :end and fs.end > :start and fs.freeSlotId.scheduleId = :scheduleId")
+    FreeSlot findIntersectingById(@Param("scheduleId") Long scheduleId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

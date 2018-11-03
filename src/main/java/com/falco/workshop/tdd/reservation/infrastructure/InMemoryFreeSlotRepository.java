@@ -5,9 +5,7 @@ import com.falco.workshop.tdd.reservation.domain.FreeSlotRepository;
 import com.falco.workshop.tdd.reservation.domain.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.Slot;
 import com.google.common.collect.Lists;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,13 +20,13 @@ public class InMemoryFreeSlotRepository implements FreeSlotRepository {
     }
 
     @Override
-    public Slot findById(ScheduleId id, LocalDateTime start) {
-        return slots.stream().filter(s -> s.id().equals(id) && s.interval().start().equals(start)).findFirst().get();
+    public Slot findById(ScheduleId id, DateInterval interval) {
+        return slots.stream().filter(s -> s.id().equals(id) && s.interval().encloses(interval)).findFirst().get();
     }
 
     @Override
     public void delete(Slot slot) {
-        slots.remove(findById(slot.id(), slot.interval().start()));
+        slots.remove(findById(slot.id(), slot.interval()));
     }
 
     @Override

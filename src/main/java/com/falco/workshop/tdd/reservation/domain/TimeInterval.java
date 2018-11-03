@@ -1,23 +1,16 @@
 package com.falco.workshop.tdd.reservation.domain;
 
-import javax.persistence.Embeddable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-@Embeddable
 public class TimeInterval {
-    private LocalTime start;
-    private LocalTime end;
+    private final LocalTime start;
+    private final LocalTime end;
 
-    TimeInterval() {
-    }
-
-    TimeInterval(LocalTime start, LocalTime end) {
+    private TimeInterval(LocalTime start, LocalTime end) {
         this.start = start;
         this.end = end;
     }
@@ -46,12 +39,11 @@ public class TimeInterval {
 
     @Override
     public String toString() {
-        return reflectionToString(this, SHORT_PREFIX_STYLE);
+        return start.toString() + "-" + end.toString();
     }
 
     public static TimeInterval parse(String fromTo) {
         String[] fromToSplitted = fromTo.split("-");
-        return new TimeInterval(LocalTime.parse(fromToSplitted[0]), LocalTime.parse(fromToSplitted[1])
-        );
+        return new TimeInterval(LocalTime.parse(fromToSplitted[0]), LocalTime.parse(fromToSplitted[1]));
     }
 }
