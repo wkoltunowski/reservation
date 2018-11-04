@@ -19,6 +19,10 @@ public class DefineScheduleService {
 
     public void defineSchedule(DailyDoctorSchedule schedule) {
         this.scheduleRepository.save(schedule);
+        generateSlots(schedule);
+    }
+
+    private void generateSlots(DailyDoctorSchedule schedule) {
         LocalDateTime start = LocalDate.of(2018, 1, 1).atTime(0, 0);
         LocalDateTime end = LocalDate.of(2019, 1, 1).atTime(0, 0);
         this.freeSlotRepository.saveAll(schedule.generateSlots(DateInterval.parse(start, end)));

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -41,9 +42,17 @@ public class FindFreeSlotsController {
     @ResponseBody
     public List<SlotJS> findFreeSlots() {
         LocalDateTime startFrom = LocalDateTime.now();
-        return findFreeSlotsService
-                .findFreeSlots(DateInterval.parse(startFrom, startFrom.plusDays(1))).stream()
-                .map(this::toJson).collect(toList());
+        List<SlotJS> slots = new LinkedList<>();
+        LocalDateTime maxDate = startFrom.plusDays(45);
+        while (slots.size() < 50 && startFrom.isBefore(maxDate)) {
+            slots.addAll(findForDay(startFrom));
+            startFrom = startFrom.plusDays(1);
+        }
+        return slots;
+    }
+
+    private List<SlotJS> findForDay(LocalDateTime startFrom) {
+        return findFreeSlotsService.findFreeSlots(DateInterval.parse(startFrom, startFrom.plusDays(1))).stream().limit(50).map(this::toJson).collect(toList());
     }
 
     private SlotJS toJson(Slot slot) {
@@ -55,7 +64,7 @@ public class FindFreeSlotsController {
         private final String start;
         private final String end;
 
-        public SlotJS(String scheduleId, String start, String end) {
+        SlotJS(String scheduleId, String start, String end) {
             this.scheduleId = scheduleId;
             this.start = start;
             this.end = end;

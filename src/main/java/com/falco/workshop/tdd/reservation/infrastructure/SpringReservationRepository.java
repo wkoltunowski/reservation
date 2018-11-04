@@ -4,7 +4,7 @@ import com.falco.workshop.tdd.reservation.application.SlotReservationService;
 import com.falco.workshop.tdd.reservation.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
@@ -55,7 +55,7 @@ public class SpringReservationRepository implements ReservationRepository {
 }
 
 @RepositoryRestResource(collectionResourceRel = "reservations", path = "reservations")
-interface CrudReservationRepository extends CrudRepository<PatientReservationJS, Long> {
+interface CrudReservationRepository extends PagingAndSortingRepository<PatientReservationJS, Long> {
     @Query("SELECT p FROM PatientReservationJS p WHERE p.start <= :end and p.end >= :start")
     Iterable<PatientReservationJS> findByStartEnd(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
@@ -94,6 +94,7 @@ class PatientReservationJS {
     private String patientId;
     private LocalDateTime start;
     private LocalDateTime end;
+    private ReservationStatus status = ReservationStatus.RESERVED;
 
     private PatientReservationJS() {
     }
@@ -104,6 +105,7 @@ class PatientReservationJS {
         this.patientId = patientReservation.details().patient().id();
         this.start = patientReservation.details().slot().interval().start();
         this.end = patientReservation.details().slot().interval().end();
+        this.status = patientReservation.status();
     }
 
     public Long getReservationId() {
@@ -124,6 +126,10 @@ class PatientReservationJS {
 
     public LocalDateTime getEnd() {
         return end;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 
     public PatientReservation toPatientReservation() {

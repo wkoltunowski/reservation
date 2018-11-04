@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation.infrastructure;
 
+import com.falco.workshop.tdd.reservation.application.DefineScheduleService;
 import com.falco.workshop.tdd.reservation.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -50,20 +51,26 @@ class ScheduleControllerEventListener extends AbstractRepositoryEventListener<Sc
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private DefineScheduleService defineScheduleService;
+
     @Override
     protected void onAfterCreate(Schedule entity) {
-        freeSlotRepository.saveAll(entity.toSchedule().generateSlots(DateInterval.parse(LocalDateTime.now(), LocalDateTime.now().plusDays(90))));
+        DailyDoctorSchedule dailyDoctorSchedule = entity.toSchedule();
+        defineScheduleService.defineSchedule(dailyDoctorSchedule);
+
     }
 
     @Override
     protected void onAfterSave(Schedule entity) {
-        List<PatientReservation> reservations = reservationRepository.findByScheduleId(entity.toSchedule().id());
+        DailyDoctorSchedule dailyDoctorSchedule = entity.toSchedule();
+        List<PatientReservation> reservations = reservationRepository.findByScheduleId(dailyDoctorSchedule.id());
 
         for (Slot reservedSlot : reservations.stream().map(r -> r.details().slot()).collect(toList())) {
             freeSlotRepository.delete(reservedSlot);
         }
 
-        List<Slot> slots = entity.toSchedule().generateSlots(DateInterval.parse(LocalDateTime.now(), LocalDateTime.now().plusDays(365)));
+        List<Slot> slots = dailyDoctorSchedule.generateSlots(DateInterval.parse(LocalDateTime.now(), LocalDateTime.now().plusDays(365)));
         for (PatientReservation reservation : reservations) {
             Optional<Slot> first = slots.stream().filter(s -> s.interval().encloses(reservation.details().slot().interval())).findFirst();
             if (!first.isPresent()) {

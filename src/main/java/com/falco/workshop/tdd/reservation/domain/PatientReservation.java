@@ -30,4 +30,8 @@ public class PatientReservation {
     public static PatientReservation reservation(ReservationId reservationId, PatientSlot patientSlot) {
         return new PatientReservation(reservationId, patientSlot);
     }
+
+    public ReservationStatus status() {
+        return status;
+    }
 }
