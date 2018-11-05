@@ -1,9 +1,9 @@
 package com.falco.workshop.tdd.reservation.infrastructure.reservation;
 
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
-import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
+import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.reservation.*;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
-import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
+import static com.falco.workshop.tdd.reservation.domain.slots.FreeSlot.slot;
 import static java.util.stream.Collectors.toList;
 
 @Controller
@@ -27,8 +30,13 @@ public class ReservationsController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public PatientReservationJS create(@RequestBody final PatientReservationJS resource) {
-        Preconditions.checkNotNull(resource);
-        return new PatientReservationJS(patientReservationService.reserve(resource.toPatientReservation().details()));
+        return new PatientReservationJS(patientReservationService.reserve(toPatientSlot(resource)));
+    }
+
+    private PatientSlot toPatientSlot(@RequestBody PatientReservationJS resource) {
+        return patientSlot(
+                new PatientId(resource.getPatientId()),
+                slot(new ScheduleId(resource.getScheduleId()), DateInterval.fromTo(resource.getStart(), resource.getEnd())));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -41,5 +49,51 @@ public class ReservationsController {
     @ResponseBody
     public Page<PatientReservationJS> findAllPageable(Pageable pageable) {
         return reservationRepository.findAll(pageable).map(PatientReservationJS::new);
+    }
+}
+
+class PatientReservationJS {
+    private Long reservationId;
+    private Long scheduleId;
+    private String patientId;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private ReservationStatus status;
+
+    private PatientReservationJS() {
+    }
+
+    public PatientReservationJS(PatientReservation reservation) {
+        this.reservationId = reservation.id().id();
+        PatientSlot slot = reservation.details();
+        this.scheduleId = slot.slot().id().id();
+        this.patientId = slot.patient().id();
+        this.start = slot.slot().interval().start();
+        this.end = slot.slot().interval().end();
+        this.status = reservation.status();
+    }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public Long getScheduleId() {
+        return scheduleId;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 }

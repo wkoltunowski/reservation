@@ -9,13 +9,14 @@ import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
 import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
 import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
-import com.falco.workshop.tdd.reservation.domain.slots.Slot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
 import static java.util.stream.Collectors.toList;
 
@@ -46,15 +47,15 @@ public class ReservationApplication {
         defineScheduleService.defineSchedule(schedule);
     }
 
-    public List<Slot> findFreeSlots(LocalDateTime startingFrom) {
-        return this.findFreeSlotsService.findFreeSlots(DateInterval.parse(startingFrom, startingFrom.toLocalDate().plusDays(1).atStartOfDay()));
+    public List<FreeSlot> findFreeSlots(LocalDateTime startingFrom) {
+        return this.findFreeSlotsService.findFreeSlots(fromTo(startingFrom, startingFrom.toLocalDate().plusDays(1).atStartOfDay()));
     }
 
-    public void reserveSlot(PatientId patientId, Slot slot) {
-        patientReservationService.reserve(patientSlot(patientId, slot));
+    public void reserveSlot(PatientId patientId, FreeSlot freeSlot) {
+        patientReservationService.reserve(patientSlot(patientId, freeSlot));
     }
 
     public List<PatientSlot> findReservationsFor(String day) {
-        return reservationRepository.findReservations(DateInterval.parse(day + " 00:00-23:59")).stream().map(PatientReservation::details).collect(toList());
+        return reservationRepository.findReservations(fromTo(day + " 00:00-23:59")).stream().map(PatientReservation::details).collect(toList());
     }
 }

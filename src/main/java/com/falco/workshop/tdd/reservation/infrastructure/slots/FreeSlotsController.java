@@ -18,6 +18,7 @@ package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +40,9 @@ public class FreeSlotsController {
 
     @RequestMapping(method = GET)
     @ResponseBody
-    public List<SlotJS> findFreeSlots() {
+    public List<FreeSlotJS> findFreeSlots() {
         LocalDateTime startFrom = LocalDateTime.now();
-        List<SlotJS> slots = new LinkedList<>();
+        List<FreeSlotJS> slots = new LinkedList<>();
         LocalDateTime maxDate = startFrom.plusDays(45);
         while (slots.size() < 50 && startFrom.isBefore(maxDate)) {
             slots.addAll(findForDay(startFrom));
@@ -50,9 +51,37 @@ public class FreeSlotsController {
         return slots;
     }
 
-    private List<SlotJS> findForDay(LocalDateTime startFrom) {
+    private List<FreeSlotJS> findForDay(LocalDateTime startFrom) {
         return findFreeSlotsService
-                .findFreeSlots(DateInterval.parse(startFrom, startFrom.plusDays(1))).stream().limit(50).map(SlotJS::new)
+                .findFreeSlots(DateInterval.fromTo(startFrom, startFrom.plusDays(1))).stream().limit(50).map(FreeSlotJS::new)
                 .collect(toList());
     }
 }
+
+class FreeSlotJS {
+    private Long scheduleId;
+    private LocalDateTime start;
+    private LocalDateTime end;
+
+    FreeSlotJS() {
+    }
+
+    FreeSlotJS(FreeSlot freeSlot) {
+        this.scheduleId = freeSlot.id().id();
+        this.start = freeSlot.interval().start();
+        this.end = freeSlot.interval().end();
+    }
+
+    public Long getScheduleId() {
+        return scheduleId;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+}
+

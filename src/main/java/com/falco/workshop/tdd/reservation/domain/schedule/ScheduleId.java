@@ -33,7 +33,11 @@ public class ScheduleId implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static ScheduleId newId(int i) {
+    public static ScheduleId scheduleId(int i) {
+        return new ScheduleId(i);
+    }
+
+    public static ScheduleId scheduleId(long i) {
         return new ScheduleId(i);
     }
 }

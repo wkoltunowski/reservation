@@ -33,7 +33,7 @@ public class ReservationId implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static ReservationId newId(Long id) {
+    public static ReservationId reservationId(Long id) {
         return new ReservationId(id);
     }
 }

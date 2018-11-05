@@ -16,7 +16,7 @@ public class TimeInterval {
     }
 
     public DateInterval toDateInterval(LocalDate day) {
-        return DateInterval.parse(day, this);
+        return DateInterval.fromTo(day, this);
     }
 
     public LocalTime start() {
@@ -42,7 +42,7 @@ public class TimeInterval {
         return start.toString() + "-" + end.toString();
     }
 
-    public static TimeInterval parse(String fromTo) {
+    public static TimeInterval fromTo(String fromTo) {
         String[] fromToSplitted = fromTo.split("-");
         return new TimeInterval(LocalTime.parse(fromToSplitted[0]), LocalTime.parse(fromToSplitted[1]));
     }

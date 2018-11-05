@@ -52,19 +52,19 @@ public class DateInterval {
         return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
-    public static DateInterval parse(LocalDate day, TimeInterval timeInterval) {
+    public static DateInterval fromTo(LocalDate day, TimeInterval timeInterval) {
         return new DateInterval(day.atTime(timeInterval.start()), day.atTime(timeInterval.end()));
     }
 
-    public static DateInterval parse(String dayFromTo) {
-        return parse(LocalDate.parse(dayFromTo.split(" ")[0]), TimeInterval.parse(dayFromTo.split(" ")[1]));
+    public static DateInterval fromTo(String dayFromTo) {
+        return fromTo(LocalDate.parse(dayFromTo.split(" ")[0]), TimeInterval.fromTo(dayFromTo.split(" ")[1]));
     }
 
-    public static DateInterval parse(LocalDateTime start, Duration duration) {
+    public static DateInterval fromTo(LocalDateTime start, Duration duration) {
         return new DateInterval(start, start.plus(duration));
     }
 
-    public static DateInterval parse(LocalDateTime start, LocalDateTime end) {
+    public static DateInterval fromTo(LocalDateTime start, LocalDateTime end) {
         return new DateInterval(start, end);
     }
 

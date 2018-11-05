@@ -13,11 +13,11 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-public class Slot {
+public class FreeSlot {
     private final ScheduleId scheduleId;
     private final DateInterval interval;
 
-    private Slot(ScheduleId scheduleId, DateInterval dateInterval) {
+    private FreeSlot(ScheduleId scheduleId, DateInterval dateInterval) {
         this.scheduleId = scheduleId;
         this.interval = dateInterval;
     }
@@ -30,9 +30,9 @@ public class Slot {
         return interval;
     }
 
-    public List<Slot> splitBy(Slot slot) {
-        Slot before = Slot.slot(scheduleId, DateInterval.parse(interval.start(), slot.interval().start()));
-        Slot after = Slot.slot(scheduleId, DateInterval.parse(slot.interval().end(), (interval.end())));
+    public List<FreeSlot> splitBy(FreeSlot freeSlot) {
+        FreeSlot before = FreeSlot.slot(scheduleId, DateInterval.fromTo(interval.start(), freeSlot.interval().start()));
+        FreeSlot after = FreeSlot.slot(scheduleId, DateInterval.fromTo(freeSlot.interval().end(), (interval.end())));
         if (!before.isEmpty() && !after.isEmpty()) {
             return ImmutableList.of(before, after);
         }
@@ -49,14 +49,14 @@ public class Slot {
         return interval().isEmpty();
     }
 
-    public List<Slot> splitBy(Duration duration) {
-        DateInterval slotInterval = DateInterval.parse(interval.start(), interval.start().plus(duration));
-        List<Slot> slots = new ArrayList<>();
+    public List<FreeSlot> splitBy(Duration duration) {
+        DateInterval slotInterval = DateInterval.fromTo(interval.start(), interval.start().plus(duration));
+        List<FreeSlot> freeSlots = new ArrayList<>();
         while (interval().encloses(slotInterval)) {
-            slots.add(Slot.slot(scheduleId, slotInterval));
-            slotInterval = DateInterval.parse(slotInterval.end(), slotInterval.end().plus(duration));
+            freeSlots.add(FreeSlot.slot(scheduleId, slotInterval));
+            slotInterval = DateInterval.fromTo(slotInterval.end(), slotInterval.end().plus(duration));
         }
-        return slots;
+        return freeSlots;
     }
 
     @Override
@@ -74,11 +74,11 @@ public class Slot {
         return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
-    public static Slot slot(ScheduleId scheduleId, DateInterval interval) {
-        return new Slot(scheduleId, interval);
+    public static FreeSlot slot(ScheduleId scheduleId, DateInterval interval) {
+        return new FreeSlot(scheduleId, interval);
     }
 
-    public static Slot slot(ScheduleId scheduleId, String dayFromTo) {
-        return Slot.slot(scheduleId, DateInterval.parse(dayFromTo));
+    public static FreeSlot slot(ScheduleId scheduleId, String dayFromTo) {
+        return FreeSlot.slot(scheduleId, DateInterval.fromTo(dayFromTo));
     }
 }

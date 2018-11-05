@@ -2,7 +2,7 @@ package com.falco.workshop.tdd.reservation.domain.schedule;
 
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.slots.Slot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
 import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 
 import java.time.Duration;
@@ -36,18 +36,18 @@ public class DailyDoctorSchedule {
         return visitDuration;
     }
 
-    public List<Slot> generateSlots(DateInterval interval) {
-        List<Slot> slots = new ArrayList<>();
+    public List<FreeSlot> generateSlots(DateInterval interval) {
+        List<FreeSlot> freeSlots = new ArrayList<>();
         LocalDate day = interval.start().toLocalDate();
         while (!day.isAfter(interval.end().toLocalDate())) {
-            slots.addAll(dailySlots(day).stream().filter(s -> interval.encloses(s.interval())).collect(toList()));
+            freeSlots.addAll(dailySlots(day).stream().filter(s -> interval.encloses(s.interval())).collect(toList()));
             day = day.plusDays(1);
         }
-        return slots;
+        return freeSlots;
     }
 
-    private List<Slot> dailySlots(LocalDate day) {
-        return singletonList(Slot.slot(id, workingHours.toDateInterval(day)));
+    private List<FreeSlot> dailySlots(LocalDate day) {
+        return singletonList(FreeSlot.slot(id, workingHours.toDateInterval(day)));
     }
 
     public static DailyDoctorSchedule dailyDoctorSchedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration) {

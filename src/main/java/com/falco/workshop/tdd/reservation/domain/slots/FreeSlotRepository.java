@@ -6,11 +6,11 @@ import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import java.util.List;
 
 public interface FreeSlotRepository {
-    List<Slot> find(DateInterval interval);
+    List<FreeSlot> find(DateInterval interval);
 
-    Slot findById(ScheduleId id, DateInterval interval);
+    List<FreeSlot> findById(ScheduleId id, DateInterval interval);
 
-    void delete(Slot slot);
+    void delete(FreeSlot freeSlot);
 
-    void saveAll(List<Slot> slots);
+    void saveAll(List<FreeSlot> freeSlots);
 }

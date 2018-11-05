@@ -5,10 +5,10 @@ public class PatientReservation {
     private PatientSlot details;
     private ReservationStatus status;
 
-    private PatientReservation(ReservationId reservationId, PatientSlot details) {
+    private PatientReservation(ReservationId reservationId, PatientSlot details, ReservationStatus status) {
         this.reservationId = reservationId;
         this.details = details;
-        this.status = ReservationStatus.RESERVED;
+        this.status = status;
     }
 
     public ReservationId id() {
@@ -24,11 +24,11 @@ public class PatientReservation {
     }
 
     public static PatientReservation reservation(PatientSlot patientSlot) {
-        return new PatientReservation(null, patientSlot);
+        return reservation(null, patientSlot, ReservationStatus.RESERVED);
     }
 
-    public static PatientReservation reservation(ReservationId reservationId, PatientSlot patientSlot) {
-        return new PatientReservation(reservationId, patientSlot);
+    public static PatientReservation reservation(ReservationId reservationId, PatientSlot patientSlot, ReservationStatus status) {
+        return new PatientReservation(reservationId, patientSlot, status);
     }
 
     public ReservationStatus status() {

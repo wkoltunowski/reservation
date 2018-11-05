@@ -1,9 +1,9 @@
 package com.falco.workshop.tdd.reservation.application;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
-import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ public class FindFreeSlotsService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public List<Slot> findFreeSlots(DateInterval interval) {
+    public List<FreeSlot> findFreeSlots(DateInterval interval) {
         return this.freeSlotRepository.find(interval).stream()
                 .map(s -> s.splitBy(scheduleRepository.findById(s.id()).visitDuration()))
                 .flatMap(Collection::stream)
