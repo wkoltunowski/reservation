@@ -1,6 +1,11 @@
 package com.falco.workshop.tdd.reservation;
 
 import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientId;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
+import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +13,9 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
-import static com.falco.workshop.tdd.reservation.domain.PatientSlot.patientSlot;
-import static com.falco.workshop.tdd.reservation.domain.Slot.slot;
+import static com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule.dailyDoctorSchedule;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
+import static com.falco.workshop.tdd.reservation.domain.slots.Slot.slot;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
 

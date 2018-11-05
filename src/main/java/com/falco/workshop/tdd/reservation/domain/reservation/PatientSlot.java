@@ -1,5 +1,6 @@
-package com.falco.workshop.tdd.reservation.domain;
+package com.falco.workshop.tdd.reservation.domain.reservation;
 
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;

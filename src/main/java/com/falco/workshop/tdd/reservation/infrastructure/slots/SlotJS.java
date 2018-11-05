@@ -1,8 +1,8 @@
 package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.Slot;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

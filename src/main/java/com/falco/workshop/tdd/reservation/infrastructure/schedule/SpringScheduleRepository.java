@@ -1,8 +1,8 @@
 package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
-import com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule;
-import com.falco.workshop.tdd.reservation.domain.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.ScheduleRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

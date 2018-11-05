@@ -4,13 +4,19 @@ import com.falco.workshop.tdd.reservation.application.DefineScheduleService;
 import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
 import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientId;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.falco.workshop.tdd.reservation.domain.PatientSlot.patientSlot;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
 import static java.util.stream.Collectors.toList;
 
 public class ReservationApplication {

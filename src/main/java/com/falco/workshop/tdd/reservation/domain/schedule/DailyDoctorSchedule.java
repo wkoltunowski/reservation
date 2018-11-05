@@ -1,5 +1,9 @@
-package com.falco.workshop.tdd.reservation.domain;
+package com.falco.workshop.tdd.reservation.domain.schedule;
 
+
+import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
+import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 
 import java.time.Duration;
 import java.time.LocalDate;

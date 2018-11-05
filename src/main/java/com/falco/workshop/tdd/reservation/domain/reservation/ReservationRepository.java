@@ -1,5 +1,7 @@
-package com.falco.workshop.tdd.reservation.domain;
+package com.falco.workshop.tdd.reservation.domain.reservation;
 
+import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

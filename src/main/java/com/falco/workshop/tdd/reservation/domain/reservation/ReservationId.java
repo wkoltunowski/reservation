@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation.domain;
+package com.falco.workshop.tdd.reservation.domain.reservation;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -7,15 +7,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
-public class ScheduleId implements Serializable {
-    private Long scheduleId;
+public class ReservationId implements Serializable {
+    private final Long id;
 
-    public Long id() {
-        return scheduleId;
+    private ReservationId(Long id) {
+        this.id = id;
     }
 
-    public ScheduleId(long id) {
-        this.scheduleId = id;
+    public Long id() {
+        return id;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ScheduleId implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static ScheduleId newId(int i) {
-        return new ScheduleId(i);
+    public static ReservationId newId(Long id) {
+        return new ReservationId(id);
     }
 }

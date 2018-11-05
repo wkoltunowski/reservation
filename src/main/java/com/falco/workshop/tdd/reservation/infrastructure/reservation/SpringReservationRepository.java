@@ -1,6 +1,10 @@
-package com.falco.workshop.tdd.reservation.infrastructure.reservations;
+package com.falco.workshop.tdd.reservation.infrastructure.reservation;
 
 import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationId;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

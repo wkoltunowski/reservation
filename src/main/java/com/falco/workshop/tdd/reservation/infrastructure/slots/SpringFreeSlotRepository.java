@@ -1,9 +1,9 @@
 package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.FreeSlotRepository;
-import com.falco.workshop.tdd.reservation.domain.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.Slot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.slots.Slot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

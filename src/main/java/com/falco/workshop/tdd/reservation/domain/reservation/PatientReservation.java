@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation.domain;
+package com.falco.workshop.tdd.reservation.domain.reservation;
 
 public class PatientReservation {
     private final ReservationId reservationId;

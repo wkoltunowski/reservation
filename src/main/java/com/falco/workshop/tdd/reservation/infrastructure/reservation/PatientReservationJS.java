@@ -1,6 +1,11 @@
-package com.falco.workshop.tdd.reservation.infrastructure.reservations;
+package com.falco.workshop.tdd.reservation.infrastructure.reservation;
 
 import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientId;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationId;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationStatus;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,10 +14,10 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.falco.workshop.tdd.reservation.domain.PatientReservation.reservation;
-import static com.falco.workshop.tdd.reservation.domain.PatientSlot.patientSlot;
-import static com.falco.workshop.tdd.reservation.domain.ReservationId.newId;
-import static com.falco.workshop.tdd.reservation.domain.Slot.slot;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation.reservation;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
+import static com.falco.workshop.tdd.reservation.domain.reservation.ReservationId.newId;
+import static com.falco.workshop.tdd.reservation.domain.slots.Slot.slot;
 
 @Entity
 public class PatientReservationJS {

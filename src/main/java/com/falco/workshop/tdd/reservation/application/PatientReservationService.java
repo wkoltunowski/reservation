@@ -1,12 +1,12 @@
 package com.falco.workshop.tdd.reservation.application;
 
-import com.falco.workshop.tdd.reservation.domain.PatientReservation;
-import com.falco.workshop.tdd.reservation.domain.PatientSlot;
-import com.falco.workshop.tdd.reservation.domain.ReservationRepository;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.falco.workshop.tdd.reservation.domain.PatientReservation.reservation;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation.reservation;
 
 @Component
 public class PatientReservationService {

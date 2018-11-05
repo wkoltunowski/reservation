@@ -1,7 +1,7 @@
 package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
-import com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule;
-import com.falco.workshop.tdd.reservation.domain.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import java.time.Duration;
 import java.util.Optional;
 
-import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
+import static com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule.dailyDoctorSchedule;
 
 @Entity
 public class ScheduleJS {
