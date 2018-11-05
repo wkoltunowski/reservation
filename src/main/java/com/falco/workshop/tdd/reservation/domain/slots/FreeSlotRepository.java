@@ -10,7 +10,11 @@ public interface FreeSlotRepository {
 
     List<FreeSlot> findById(ScheduleId id, DateInterval interval);
 
+    List<FreeSlot> findById(ScheduleId id);
+
     void delete(FreeSlot freeSlot);
 
     void saveAll(List<FreeSlot> freeSlots);
+
+    void deleteByScheduleId(ScheduleId id);
 }

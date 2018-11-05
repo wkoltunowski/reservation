@@ -1,6 +1,6 @@
 package com.falco.workshop.tdd.reservation.infrastructure.reservation;
 
-import com.falco.workshop.tdd.reservation.domain.*;
+import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.reservation.ReservationId;
 import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
@@ -13,16 +13,24 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation.reservation;
+import static com.falco.workshop.tdd.reservation.domain.reservation.ReservationId.reservationId;
 import static java.util.stream.Collectors.toList;
 
-//@Component
 public class InMemoryReservationRepository implements ReservationRepository {
     private List<PatientReservation> patientReservations = new ArrayList<>();
+    private Long next = 1L;
 
     @Override
     public PatientReservation save(PatientReservation patientReservation) {
-        patientReservations.add(patientReservation);
-        return patientReservation;
+        PatientReservation reservation;
+        if (patientReservation.id() == null)
+            reservation = reservation(reservationId(next++), patientReservation.details(), patientReservation.status());
+        else
+            reservation = patientReservation;
+        patientReservations.removeIf(r -> r.id().equals(reservation.id()));
+        patientReservations.add(reservation);
+        return reservation;
     }
 
     @Override

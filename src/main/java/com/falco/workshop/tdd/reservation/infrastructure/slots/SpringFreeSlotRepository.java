@@ -5,10 +5,12 @@ import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,9 +30,11 @@ public class SpringFreeSlotRepository implements FreeSlotRepository {
 
     @Override
     public List<FreeSlot> find(DateInterval interval) {
-        return sequentialStream(crud.findIntersecting(interval.start(), interval.end()))
-                .map(FreeSlotEntity::toSlot)
-                .collect(toList());
+        return toFreeSlotsList(crud.findIntersecting(interval.start(), interval.end()));
+    }
+
+    private List<FreeSlot> toFreeSlotsList(Iterable<FreeSlotEntity> slots) {
+        return sequentialStream(slots).map(FreeSlotEntity::toSlot).collect(toList());
     }
 
     private Stream<FreeSlotEntity> sequentialStream(Iterable<FreeSlotEntity> iterable) {
@@ -39,17 +43,28 @@ public class SpringFreeSlotRepository implements FreeSlotRepository {
 
     @Override
     public List<FreeSlot> findById(ScheduleId id, DateInterval interval) {
-        return sequentialStream(crud.findIntersectingById(id.id(), interval.start(), interval.end())).map(FreeSlotEntity::toSlot).collect(toList());
+        return toFreeSlotsList(crud.findIntersectingById(id.id(), interval.start(), interval.end()));
+    }
+
+    @Override
+    public List<FreeSlot> findById(ScheduleId id) {
+        return toFreeSlotsList(crud.findByScheduleId(id.id()));
     }
 
     @Override
     public void delete(FreeSlot freeSlot) {
-        crud.deleteById(crud.findByScheduleIdStart(freeSlot.id().id(), freeSlot.interval().start()).id());
+        FreeSlotEntity entity = crud.findByScheduleIdStart(freeSlot.id().id(), freeSlot.interval().start());
+        crud.deleteById(entity.id());
     }
 
     @Override
     public void saveAll(List<FreeSlot> freeSlots) {
         crud.saveAll(freeSlots.stream().map(FreeSlotEntity::new).collect(toList()));
+    }
+
+    @Override
+    public void deleteByScheduleId(ScheduleId id) {
+        crud.deleteByScheduleId(id.id());
     }
 }
 
@@ -63,6 +78,14 @@ interface CrudFreeSlotRepository extends CrudRepository<FreeSlotEntity, Long> {
 
     @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.scheduleId = :scheduleId and fs.start = :start")
     FreeSlotEntity findByScheduleIdStart(@Param("scheduleId") Long scheduleId, @Param("start") LocalDateTime start);
+
+    @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.scheduleId = :scheduleId ")
+    Iterable<FreeSlotEntity> findByScheduleId(@Param("scheduleId") Long scheduleId);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM FreeSlotEntity fs WHERE fs.scheduleId = :scheduleId ")
+    void deleteByScheduleId(@Param("scheduleId") Long scheduleId);
 }
 
 @Entity

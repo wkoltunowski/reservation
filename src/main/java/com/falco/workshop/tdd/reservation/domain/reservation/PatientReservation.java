@@ -1,8 +1,13 @@
 package com.falco.workshop.tdd.reservation.domain.reservation;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class PatientReservation {
     private final ReservationId reservationId;
-    private PatientSlot details;
+    private final PatientSlot details;
     private ReservationStatus status;
 
     private PatientReservation(ReservationId reservationId, PatientSlot details, ReservationStatus status) {
@@ -21,6 +26,21 @@ public class PatientReservation {
 
     public void cancel() {
         this.status = ReservationStatus.CANCELLED;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     public static PatientReservation reservation(PatientSlot patientSlot) {
