@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation.infrastructure;
+package com.falco.workshop.tdd.reservation.infrastructure.reservations;
 
 import com.falco.workshop.tdd.reservation.domain.*;
 

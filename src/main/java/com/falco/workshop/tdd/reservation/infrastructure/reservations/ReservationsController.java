@@ -1,9 +1,9 @@
-package com.falco.workshop.tdd.reservation.infrastructure.api;
+package com.falco.workshop.tdd.reservation.infrastructure.reservations;
 
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
 import com.falco.workshop.tdd.reservation.domain.ReservationRepository;
 import com.falco.workshop.tdd.reservation.domain.ScheduleId;
-import com.falco.workshop.tdd.reservation.infrastructure.PatientReservationJS;
+import com.falco.workshop.tdd.reservation.infrastructure.reservations.PatientReservationJS;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

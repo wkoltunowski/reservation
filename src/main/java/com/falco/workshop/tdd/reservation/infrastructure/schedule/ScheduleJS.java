@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation.infrastructure;
+package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
 import com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule;
 import com.falco.workshop.tdd.reservation.domain.ScheduleId;
@@ -8,22 +8,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.Duration;
+import java.util.Optional;
 
 import static com.falco.workshop.tdd.reservation.domain.DailyDoctorSchedule.dailyDoctorSchedule;
 
 @Entity
-public class Schedule {
+public class ScheduleJS {
     @Id
     @GeneratedValue(generator = "auto")
     private Long id;
     private String visitDuration;
     private String workingHours;
 
-    Schedule() {
+    ScheduleJS() {
     }
 
-    public Schedule(DailyDoctorSchedule schedule) {
-        this.id = schedule.id().id();
+    public ScheduleJS(DailyDoctorSchedule schedule) {
+        this.id = Optional.ofNullable(schedule.id()).map(ScheduleId::id).orElse(null);
         this.visitDuration = schedule.visitDuration().toString();
         this.workingHours = schedule.workingHours().toString();
     }
@@ -41,6 +42,6 @@ public class Schedule {
     }
 
     public DailyDoctorSchedule toSchedule() {
-        return dailyDoctorSchedule(new ScheduleId(id), TimeInterval.parse(workingHours), Duration.parse(visitDuration));
+        return dailyDoctorSchedule(Optional.ofNullable(id).map(ScheduleId::new).orElse(null), TimeInterval.parse(workingHours), Duration.parse(visitDuration));
     }
 }

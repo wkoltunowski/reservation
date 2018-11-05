@@ -22,7 +22,7 @@ public class DefineScheduleService {
 
     public DailyDoctorSchedule defineSchedule(DailyDoctorSchedule schedule) {
         DailyDoctorSchedule dailyDoctorSchedule = this.scheduleRepository.save(schedule);
-        generateSlots(schedule);
+        generateSlots(dailyDoctorSchedule);
         return dailyDoctorSchedule;
     }
 
