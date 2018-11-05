@@ -2,11 +2,11 @@ package com.falco.workshop.tdd.reservation.application;
 
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
-import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,43 +20,45 @@ import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 @Component
 public class DefineScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final FreeSlotRepository freeSlotRepository;
+    private final FreeScheduleSlotRepository freeScheduleSlotRepository;
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    public DefineScheduleService(ScheduleRepository scheduleRepository, FreeSlotRepository freeSlotRepository, ReservationRepository reservationRepository) {
+    public DefineScheduleService(ScheduleRepository scheduleRepository,
+                                 FreeScheduleSlotRepository freeScheduleSlotRepository,
+                                 ReservationRepository reservationRepository) {
         this.scheduleRepository = scheduleRepository;
-        this.freeSlotRepository = freeSlotRepository;
+        this.freeScheduleSlotRepository = freeScheduleSlotRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public DailyDoctorSchedule defineSchedule(DailyDoctorSchedule schedule) {
-        DailyDoctorSchedule dailyDoctorSchedule = this.scheduleRepository.save(schedule);
-        freeSlotRepository.saveAll(regenerate(dailyDoctorSchedule));
-        return dailyDoctorSchedule;
+    public Schedule defineSchedule(Schedule schedule) {
+        Schedule dailySchedule = this.scheduleRepository.save(schedule);
+        freeScheduleSlotRepository.saveAll(regenerate(dailySchedule));
+        return dailySchedule;
     }
 
-    private List<FreeSlot> regenerate(DailyDoctorSchedule schedule) {
+    private List<FreeScheduleSlot> regenerate(Schedule schedule) {
         LocalDateTime start = LocalDate.of(2018, 1, 1).atTime(0, 0);
         LocalDateTime end = LocalDate.of(2019, 1, 1).atTime(0, 0);
         return schedule.generateSlots(fromTo(start, end));
     }
 
-    public void updateSchedule(DailyDoctorSchedule schedule) {
-        List<FreeSlot> freeSlots = regenerate(schedule);
+    public void updateSchedule(Schedule schedule) {
+        List<FreeScheduleSlot> scheduleSlots = regenerate(schedule);
         for (PatientReservation reservation : reservations(schedule.id())) {
-            Optional<FreeSlot> newSlot = freeSlots.stream().filter(s -> s.interval().encloses(reservation.details().slot().interval())).findFirst();
+            Optional<FreeScheduleSlot> newSlot = scheduleSlots.stream().filter(s -> s.interval().encloses(reservation.details().slot().interval())).findFirst();
             if (!newSlot.isPresent()) {
                 reservation.cancel();
                 reservationRepository.save(reservation);
             } else {
-                FreeSlot found = newSlot.get();
-                freeSlots.remove(found);
-                freeSlots.addAll(found.splitBy(reservation.details().slot()));
+                FreeScheduleSlot found = newSlot.get();
+                scheduleSlots.remove(found);
+                scheduleSlots.addAll(found.cutInterval(reservation.details().slot().interval()));
             }
         }
-        freeSlotRepository.deleteByScheduleId(schedule.id());
-        freeSlotRepository.saveAll(freeSlots);
+        freeScheduleSlotRepository.deleteByScheduleId(schedule.id());
+        freeScheduleSlotRepository.saveAll(scheduleSlots);
     }
 
     private List<PatientReservation> reservations(ScheduleId scheduleId) {
@@ -68,6 +70,6 @@ public class DefineScheduleService {
             reservation.cancel();
             reservationRepository.save(reservation);
         }
-        freeSlotRepository.deleteByScheduleId(id);
+        freeScheduleSlotRepository.deleteByScheduleId(id);
     }
 }

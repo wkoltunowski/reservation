@@ -1,7 +1,7 @@
 package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
 import com.falco.workshop.tdd.reservation.application.DefineScheduleService;
-import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
 import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 
 import static com.falco.workshop.tdd.reservation.domain.TimeInterval.fromTo;
-import static com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule.dailyDoctorSchedule;
+import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
 import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
 
 @Controller
@@ -30,8 +30,8 @@ public class SchedulesController {
     @ResponseBody
     public ScheduleJS create(@RequestBody final ScheduleJS resource) {
         Preconditions.checkNotNull(resource);
-        DailyDoctorSchedule schedule = defineScheduleService.defineSchedule(
-                dailyDoctorSchedule(fromTo(resource.getWorkingHours()), Duration.parse(resource.getVisitDuration())));
+        Schedule schedule = defineScheduleService.defineSchedule(
+                schedule(fromTo(resource.getWorkingHours()), Duration.parse(resource.getVisitDuration())));
         return new ScheduleJS(schedule);
     }
 
@@ -57,7 +57,7 @@ public class SchedulesController {
     @ResponseBody
     public void update(@RequestBody final ScheduleJS resource) {
         defineScheduleService.updateSchedule(
-                dailyDoctorSchedule(scheduleId(resource.getId()), fromTo(resource.getWorkingHours()), Duration.parse(resource.getVisitDuration()))
+                Schedule.schedule(scheduleId(resource.getId()), fromTo(resource.getWorkingHours()), Duration.parse(resource.getVisitDuration()))
         );
     }
 }
@@ -70,7 +70,7 @@ class ScheduleJS {
     ScheduleJS() {
     }
 
-    public ScheduleJS(DailyDoctorSchedule schedule) {
+    public ScheduleJS(Schedule schedule) {
         this.id = schedule.id().id();
         this.visitDuration = schedule.visitDuration().toString();
         this.workingHours = schedule.workingHours().toString();

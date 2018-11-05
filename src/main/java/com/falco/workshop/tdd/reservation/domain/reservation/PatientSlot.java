@@ -1,26 +1,26 @@
 package com.falco.workshop.tdd.reservation.domain.reservation;
 
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class PatientSlot {
-    private final FreeSlot freeSlot;
     private final PatientId patient;
+    private final VisitSlot visitSlot;
 
-    private PatientSlot(PatientId patient, FreeSlot freeSlot) {
+    private PatientSlot(PatientId patient, VisitSlot visitSlot) {
         this.patient = patient;
-        this.freeSlot = freeSlot;
+        this.visitSlot = visitSlot;
     }
 
     public PatientId patient() {
         return patient;
     }
 
-    public FreeSlot slot() {
-        return this.freeSlot;
+    public VisitSlot slot() {
+        return this.visitSlot;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PatientSlot {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public static PatientSlot patientSlot(PatientId patientId, FreeSlot freeSlot) {
-        return new PatientSlot(patientId, freeSlot);
+    public static PatientSlot patientSlot(PatientId patientId, VisitSlot visitSlot) {
+        return new PatientSlot(patientId, visitSlot);
     }
 }

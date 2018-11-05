@@ -1,9 +1,10 @@
 package com.falco.workshop.tdd.reservation.infrastructure.reservation;
 
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
-import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.reservation.*;
-import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
+import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
+import com.falco.workshop.tdd.reservation.domain.reservation.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
+import static com.falco.workshop.tdd.reservation.domain.reservation.PatientId.patientId;
 import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
-import static com.falco.workshop.tdd.reservation.domain.slots.FreeSlot.slot;
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
+import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 import static java.util.stream.Collectors.toList;
 
 @Controller
@@ -35,14 +39,14 @@ public class ReservationsController {
 
     private PatientSlot toPatientSlot(@RequestBody PatientReservationJS resource) {
         return patientSlot(
-                new PatientId(resource.getPatientId()),
-                slot(new ScheduleId(resource.getScheduleId()), DateInterval.fromTo(resource.getStart(), resource.getEnd())));
+                patientId(resource.getPatientId()),
+                visitSlot(scheduleId(resource.getScheduleId()), fromTo(resource.getStart(), resource.getEnd())));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<PatientReservationJS> findById(@PathVariable("id") final Long scheduleId) {
-        return reservationRepository.findByScheduleId(new ScheduleId(scheduleId)).stream().map(PatientReservationJS::new).collect(toList());
+        return reservationRepository.findByScheduleId(scheduleId(scheduleId)).stream().map(PatientReservationJS::new).collect(toList());
     }
 
     @RequestMapping(method = RequestMethod.GET)

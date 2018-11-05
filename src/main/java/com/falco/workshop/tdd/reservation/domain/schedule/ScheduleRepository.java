@@ -4,9 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ScheduleRepository {
-    DailyDoctorSchedule save(DailyDoctorSchedule schedule);
+    Schedule save(Schedule schedule);
 
-    DailyDoctorSchedule findById(ScheduleId id);
+    Schedule findById(ScheduleId id);
 
-    Page<DailyDoctorSchedule> findAll(Pageable pageable);
+    Page<Schedule> findAll(Pageable pageable);
 }

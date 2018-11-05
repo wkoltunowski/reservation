@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class PatientId {
     private final String patientId;
 
-    public PatientId(String patientId) {
+    private PatientId(String patientId) {
         this.patientId = patientId;
     }
 

@@ -1,7 +1,8 @@
 package com.falco.workshop.tdd.reservation.application;
 
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,19 +12,19 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @Component
 public class SlotReservationService {
-    private final FreeSlotRepository freeSlotRepository;
+    private final FreeScheduleSlotRepository freeScheduleSlotRepository;
 
     @Autowired
-    public SlotReservationService(FreeSlotRepository freeSlotRepository) {
-        this.freeSlotRepository = freeSlotRepository;
+    public SlotReservationService(FreeScheduleSlotRepository freeScheduleSlotRepository) {
+        this.freeScheduleSlotRepository = freeScheduleSlotRepository;
     }
 
-    public void reserveSlot(FreeSlot freeSlot) {
-        List<FreeSlot> oldFreeSlots = freeSlotRepository.findById(freeSlot.id(), freeSlot.interval());
-        checkArgument(oldFreeSlots.size() == 1, "FreeSlot already taken!");
-        FreeSlot oldFreeSlot = oldFreeSlots.get(0);
-        checkArgument(oldFreeSlot.interval().encloses(freeSlot.interval()), "FreeSlot already taken!");
-        freeSlotRepository.delete(oldFreeSlot);
-        freeSlotRepository.saveAll(oldFreeSlot.splitBy(freeSlot));
+    public void reserveSlot(VisitSlot scheduleSlot) {
+        List<FreeScheduleSlot> oldScheduleSlots = freeScheduleSlotRepository.findByScheduleIdIntersecting(scheduleSlot.id(), scheduleSlot.interval());
+        checkArgument(oldScheduleSlots.size() == 1, "ScheduleSlot already taken!");
+        FreeScheduleSlot oldScheduleSlot = oldScheduleSlots.get(0);
+        checkArgument(oldScheduleSlot.interval().encloses(scheduleSlot.interval()), "ScheduleSlot already taken!");
+        freeScheduleSlotRepository.delete(oldScheduleSlot);
+        freeScheduleSlotRepository.saveAll(oldScheduleSlot.cutInterval(scheduleSlot.interval()));
     }
 }

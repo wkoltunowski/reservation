@@ -1,7 +1,6 @@
 package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
-import com.falco.workshop.tdd.reservation.domain.TimeInterval;
-import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +13,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.Duration;
-import java.util.Optional;
 
-import static com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule.dailyDoctorSchedule;
+import static com.falco.workshop.tdd.reservation.domain.TimeInterval.fromTo;
+import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
+import static java.time.Duration.parse;
+import static java.util.Optional.ofNullable;
 
 @Component
 public class SpringScheduleRepository implements ScheduleRepository {
@@ -29,21 +29,21 @@ public class SpringScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public DailyDoctorSchedule save(DailyDoctorSchedule schedule) {
+    public Schedule save(Schedule schedule) {
         return crud.save(toSchedule(schedule)).toSchedule();
     }
 
-    private ScheduleEntity toSchedule(DailyDoctorSchedule schedule) {
+    private ScheduleEntity toSchedule(Schedule schedule) {
         return new ScheduleEntity(schedule);
     }
 
     @Override
-    public DailyDoctorSchedule findById(ScheduleId id) {
+    public Schedule findById(ScheduleId id) {
         return crud.findById(id.id()).get().toSchedule();
     }
 
     @Override
-    public Page<DailyDoctorSchedule> findAll(Pageable pageable) {
+    public Page<Schedule> findAll(Pageable pageable) {
         return crud.findAll(pageable).map(ScheduleEntity::toSchedule);
     }
 }
@@ -62,8 +62,8 @@ class ScheduleEntity {
     ScheduleEntity() {
     }
 
-    public ScheduleEntity(DailyDoctorSchedule schedule) {
-        this.id = Optional.ofNullable(schedule.id()).map(ScheduleId::id).orElse(null);
+    public ScheduleEntity(Schedule schedule) {
+        this.id = ofNullable(schedule.id()).map(ScheduleId::id).orElse(null);
         this.visitDuration = schedule.visitDuration().toString();
         this.workingHours = schedule.workingHours().toString();
     }
@@ -80,8 +80,8 @@ class ScheduleEntity {
         return workingHours;
     }
 
-    public DailyDoctorSchedule toSchedule() {
-        return dailyDoctorSchedule(Optional.ofNullable(id).map(ScheduleId::new).orElse(null), TimeInterval.fromTo(workingHours), Duration.parse(visitDuration));
+    public Schedule toSchedule() {
+        return schedule(ofNullable(id).map(ScheduleId::scheduleId).orElse(null), fromTo(workingHours), parse(visitDuration));
     }
 }
 

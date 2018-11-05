@@ -1,6 +1,6 @@
 package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 
-import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
 import org.apache.commons.lang3.ObjectUtils;
@@ -14,21 +14,21 @@ import java.util.List;
 //@Component
 public class InMemoryScheduleRepository implements ScheduleRepository {
 
-    private List<DailyDoctorSchedule> schedules = new ArrayList<>();
+    private List<Schedule> schedules = new ArrayList<>();
 
     @Override
-    public DailyDoctorSchedule save(DailyDoctorSchedule schedule) {
+    public Schedule save(Schedule schedule) {
         schedules.add(schedule);
         return schedule;
     }
 
     @Override
-    public DailyDoctorSchedule findById(ScheduleId id) {
+    public Schedule findById(ScheduleId id) {
         return schedules.stream().filter(s -> s.id().equals(id)).findFirst().get();
     }
 
     @Override
-    public Page<DailyDoctorSchedule> findAll(Pageable pageable) {
+    public Page<Schedule> findAll(Pageable pageable) {
         Integer from = ObjectUtils.min(schedules.size() - 1, pageable.getPageNumber() * pageable.getPageSize());
         Integer to = ObjectUtils.min(schedules.size() - 1, from + pageable.getPageSize());
         return new PageImpl<>(schedules.subList(from, to + 1), pageable, schedules.size());

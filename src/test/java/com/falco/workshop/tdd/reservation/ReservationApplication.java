@@ -5,12 +5,12 @@ import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.application.PatientReservationService;
 import com.falco.workshop.tdd.reservation.application.SlotReservationService;
 import com.falco.workshop.tdd.reservation.domain.reservation.*;
-import com.falco.workshop.tdd.reservation.domain.schedule.DailyDoctorSchedule;
+import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import com.falco.workshop.tdd.reservation.infrastructure.reservation.InMemoryReservationRepository;
 import com.falco.workshop.tdd.reservation.infrastructure.schedule.InMemoryScheduleRepository;
-import com.falco.workshop.tdd.reservation.infrastructure.slots.InMemoryFreeSlotRepository;
+import com.falco.workshop.tdd.reservation.infrastructure.slots.InMemoryFreeScheduleSlotRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -55,7 +55,7 @@ public class ReservationApplication {
 
     public static ReservationApplication startInMemory() {
         InMemoryReservationRepository reservationRepository = new InMemoryReservationRepository();
-        InMemoryFreeSlotRepository freeSlotRepository = new InMemoryFreeSlotRepository();
+        InMemoryFreeScheduleSlotRepository freeSlotRepository = new InMemoryFreeScheduleSlotRepository();
         InMemoryScheduleRepository scheduleRepository = new InMemoryScheduleRepository();
         return new ReservationApplication(
                 reservationRepository,
@@ -71,16 +71,16 @@ public class ReservationApplication {
         stop.run();
     }
 
-    public void defineSchedule(DailyDoctorSchedule schedule) {
+    public void defineSchedule(Schedule schedule) {
         defineScheduleService.defineSchedule(schedule);
     }
 
-    public List<FreeSlot> findFreeSlots(LocalDateTime startingFrom) {
+    public List<VisitSlot> findFreeSlots(LocalDateTime startingFrom) {
         return findFreeSlotsService.findFreeSlots(fromTo(startingFrom, startingFrom.toLocalDate().plusDays(1).atStartOfDay()));
     }
 
-    public ReservationId reserveSlot(PatientId patientId, FreeSlot freeSlot) {
-        return patientReservationService.reserve(patientSlot(patientId, freeSlot)).id();
+    public ReservationId reserveSlot(PatientId patientId, VisitSlot scheduleSlot) {
+        return patientReservationService.reserve(patientSlot(patientId, scheduleSlot)).id();
     }
 
     public List<PatientSlot> findPatientSlots(String day) {
@@ -95,7 +95,7 @@ public class ReservationApplication {
         defineScheduleService.deleteSchedule(scheduleId);
     }
 
-    public void updateSchedule(DailyDoctorSchedule schedule) {
+    public void updateSchedule(Schedule schedule) {
         defineScheduleService.updateSchedule(schedule);
     }
 }

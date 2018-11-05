@@ -18,16 +18,22 @@ package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
+import static java.time.Duration.ofDays;
+import static java.time.LocalDateTime.now;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -35,26 +41,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping("/freeslots")
 public class FreeSlotsController {
     @Autowired
-    private FindFreeSlotsService findFreeSlotsService;
+    private FindFreeSlotsService freeSlotsService;
 
 
     @RequestMapping(method = GET)
     @ResponseBody
-    public List<FreeSlotJS> findFreeSlots() {
-        LocalDateTime startFrom = LocalDateTime.now();
-        List<FreeSlotJS> slots = new LinkedList<>();
-        LocalDateTime maxDate = startFrom.plusDays(45);
-        while (slots.size() < 50 && startFrom.isBefore(maxDate)) {
-            slots.addAll(findForDay(startFrom));
-            startFrom = startFrom.plusDays(1);
-        }
-        return slots;
+    public List<FreeSlotJS> freeslots() {
+        return toFreeSlotJS(findMaxNSlots(fromTo(now(), ofDays(45)), 50));
     }
 
-    private List<FreeSlotJS> findForDay(LocalDateTime startFrom) {
-        return findFreeSlotsService
-                .findFreeSlots(DateInterval.fromTo(startFrom, startFrom.plusDays(1))).stream().limit(50).map(FreeSlotJS::new)
+    private List<VisitSlot> findMaxNSlots(DateInterval interval, int maxSlotsCount) {
+        LocalDate startDay = interval.start().toLocalDate();
+        return IntStream.range(1, (int) DAYS.between(interval.start(), interval.end()))
+                .mapToObj(day -> findForDay(startDay.plusDays(day), maxSlotsCount))
+                .flatMap(Collection::stream)
+                .limit(maxSlotsCount)
                 .collect(toList());
+    }
+
+    private List<VisitSlot> findForDay(LocalDate date, int nSlotsCount) {
+        return freeSlotsService.findFreeSlots(fromTo(date.atStartOfDay(), date.atStartOfDay().plusDays(1))).stream().limit(nSlotsCount).collect(toList());
+    }
+
+    private List<FreeSlotJS> toFreeSlotJS(List<VisitSlot> maxNSlots) {
+        return maxNSlots.stream().map(FreeSlotJS::new).collect(toList());
     }
 }
 
@@ -66,10 +76,10 @@ class FreeSlotJS {
     FreeSlotJS() {
     }
 
-    FreeSlotJS(FreeSlot freeSlot) {
-        this.scheduleId = freeSlot.id().id();
-        this.start = freeSlot.interval().start();
-        this.end = freeSlot.interval().end();
+    FreeSlotJS(VisitSlot scheduleSlot) {
+        this.scheduleId = scheduleSlot.id().id();
+        this.start = scheduleSlot.interval().start();
+        this.end = scheduleSlot.interval().end();
     }
 
     public Long getScheduleId() {

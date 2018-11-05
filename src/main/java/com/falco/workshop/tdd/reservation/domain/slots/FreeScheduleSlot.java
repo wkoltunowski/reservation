@@ -8,16 +8,18 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
+import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-public class FreeSlot {
+public class FreeScheduleSlot {
     private final ScheduleId scheduleId;
     private final DateInterval interval;
 
-    private FreeSlot(ScheduleId scheduleId, DateInterval dateInterval) {
+    private FreeScheduleSlot(ScheduleId scheduleId, DateInterval dateInterval) {
         this.scheduleId = scheduleId;
         this.interval = dateInterval;
     }
@@ -30,9 +32,9 @@ public class FreeSlot {
         return interval;
     }
 
-    public List<FreeSlot> splitBy(FreeSlot freeSlot) {
-        FreeSlot before = FreeSlot.slot(scheduleId, DateInterval.fromTo(interval.start(), freeSlot.interval().start()));
-        FreeSlot after = FreeSlot.slot(scheduleId, DateInterval.fromTo(freeSlot.interval().end(), (interval.end())));
+    public List<FreeScheduleSlot> cutInterval(DateInterval splitInterval) {
+        FreeScheduleSlot before = freeScheduleSlot(scheduleId, fromTo(interval.start(), splitInterval.start()));
+        FreeScheduleSlot after = freeScheduleSlot(scheduleId, fromTo(splitInterval.end(), interval.end()));
         if (!before.isEmpty() && !after.isEmpty()) {
             return ImmutableList.of(before, after);
         }
@@ -49,14 +51,14 @@ public class FreeSlot {
         return interval().isEmpty();
     }
 
-    public List<FreeSlot> splitBy(Duration duration) {
-        DateInterval slotInterval = DateInterval.fromTo(interval.start(), interval.start().plus(duration));
-        List<FreeSlot> freeSlots = new ArrayList<>();
+    public List<VisitSlot> createVisitSlots(Duration duration) {
+        DateInterval slotInterval = fromTo(interval.start(), interval.start().plus(duration));
+        List<VisitSlot> scheduleSlots = new ArrayList<>();
         while (interval().encloses(slotInterval)) {
-            freeSlots.add(FreeSlot.slot(scheduleId, slotInterval));
-            slotInterval = DateInterval.fromTo(slotInterval.end(), slotInterval.end().plus(duration));
+            scheduleSlots.add(visitSlot(scheduleId, slotInterval));
+            slotInterval = fromTo(slotInterval.end(), slotInterval.end().plus(duration));
         }
-        return freeSlots;
+        return scheduleSlots;
     }
 
     @Override
@@ -74,11 +76,11 @@ public class FreeSlot {
         return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 
-    public static FreeSlot slot(ScheduleId scheduleId, DateInterval interval) {
-        return new FreeSlot(scheduleId, interval);
+    public static FreeScheduleSlot freeScheduleSlot(ScheduleId scheduleId, DateInterval interval) {
+        return new FreeScheduleSlot(scheduleId, interval);
     }
 
-    public static FreeSlot slot(ScheduleId scheduleId, String dayFromTo) {
-        return FreeSlot.slot(scheduleId, DateInterval.fromTo(dayFromTo));
+    public static FreeScheduleSlot freeScheduleSlot(ScheduleId scheduleId, String dayFromTo) {
+        return freeScheduleSlot(scheduleId, fromTo(dayFromTo));
     }
 }

@@ -28,7 +28,7 @@ import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReser
 import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
 import static com.falco.workshop.tdd.reservation.domain.reservation.ReservationId.reservationId;
 import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
-import static com.falco.workshop.tdd.reservation.domain.slots.FreeSlot.slot;
+import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 import static com.google.common.collect.ImmutableList.copyOf;
 import static java.util.stream.Collectors.toList;
 
@@ -128,7 +128,7 @@ class ReservationEntity {
     public PatientReservation toPatientReservation() {
         return reservation(
                 reservationId(reservationId),
-                patientSlot(patientId(patientId), slot(scheduleId(scheduleId), fromTo(start, end))),
+                patientSlot(patientId(patientId), visitSlot(scheduleId(scheduleId), fromTo(start, end))),
                 status
         );
     }

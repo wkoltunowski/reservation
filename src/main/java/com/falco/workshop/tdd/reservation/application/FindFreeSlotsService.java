@@ -1,9 +1,9 @@
 package com.falco.workshop.tdd.reservation.application;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,18 +14,18 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class FindFreeSlotsService {
-    private final FreeSlotRepository freeSlotRepository;
+    private final FreeScheduleSlotRepository freeScheduleSlotRepository;
     private final ScheduleRepository scheduleRepository;
 
     @Autowired
-    public FindFreeSlotsService(FreeSlotRepository freeSlotRepository, ScheduleRepository scheduleRepository) {
-        this.freeSlotRepository = freeSlotRepository;
+    public FindFreeSlotsService(FreeScheduleSlotRepository freeScheduleSlotRepository, ScheduleRepository scheduleRepository) {
+        this.freeScheduleSlotRepository = freeScheduleSlotRepository;
         this.scheduleRepository = scheduleRepository;
     }
 
-    public List<FreeSlot> findFreeSlots(DateInterval interval) {
-        return this.freeSlotRepository.find(interval).stream()
-                .map(s -> s.splitBy(scheduleRepository.findById(s.id()).visitDuration()))
+    public List<VisitSlot> findFreeSlots(DateInterval interval) {
+        return this.freeScheduleSlotRepository.findIntersecting(interval).stream()
+                .map(s -> s.createVisitSlots(scheduleRepository.findById(s.id()).visitDuration()))
                 .flatMap(Collection::stream)
                 .collect(toList());
     }

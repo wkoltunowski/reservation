@@ -37,6 +37,10 @@ public class DateInterval {
         return new DateInterval(start.plus(duration), end.plus(duration));
     }
 
+    public boolean contains(LocalDateTime dateTime) {
+        return range().contains(dateTime);
+    }
+
     @Override
     public boolean equals(Object o) {
         return reflectionEquals(this, o);

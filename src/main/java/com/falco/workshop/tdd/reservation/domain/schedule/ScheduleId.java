@@ -14,7 +14,7 @@ public class ScheduleId implements Serializable {
         return scheduleId;
     }
 
-    public ScheduleId(long id) {
+    private ScheduleId(long id) {
         this.scheduleId = id;
     }
 

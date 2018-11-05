@@ -2,8 +2,8 @@ package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlot;
-import com.falco.workshop.tdd.reservation.domain.slots.FreeSlotRepository;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
+import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,20 +20,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
+import static com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot.freeScheduleSlot;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 @Component
-public class SpringFreeSlotRepository implements FreeSlotRepository {
+public class SpringFreeScheduleSlotRepository implements FreeScheduleSlotRepository {
     @Autowired
     private CrudFreeSlotRepository crud;
 
     @Override
-    public List<FreeSlot> find(DateInterval interval) {
+    public List<FreeScheduleSlot> findIntersecting(DateInterval interval) {
         return toFreeSlotsList(crud.findIntersecting(interval.start(), interval.end()));
     }
 
-    private List<FreeSlot> toFreeSlotsList(Iterable<FreeSlotEntity> slots) {
+    private List<FreeScheduleSlot> toFreeSlotsList(Iterable<FreeSlotEntity> slots) {
         return sequentialStream(slots).map(FreeSlotEntity::toSlot).collect(toList());
     }
 
@@ -42,24 +45,24 @@ public class SpringFreeSlotRepository implements FreeSlotRepository {
     }
 
     @Override
-    public List<FreeSlot> findById(ScheduleId id, DateInterval interval) {
+    public List<FreeScheduleSlot> findByScheduleIdIntersecting(ScheduleId id, DateInterval interval) {
         return toFreeSlotsList(crud.findIntersectingById(id.id(), interval.start(), interval.end()));
     }
 
     @Override
-    public List<FreeSlot> findById(ScheduleId id) {
+    public List<FreeScheduleSlot> findByScheduleId(ScheduleId id) {
         return toFreeSlotsList(crud.findByScheduleId(id.id()));
     }
 
     @Override
-    public void delete(FreeSlot freeSlot) {
-        FreeSlotEntity entity = crud.findByScheduleIdStart(freeSlot.id().id(), freeSlot.interval().start());
+    public void delete(FreeScheduleSlot scheduleSlot) {
+        FreeSlotEntity entity = crud.findByScheduleIdStart(scheduleSlot.id().id(), scheduleSlot.interval().start());
         crud.deleteById(entity.id());
     }
 
     @Override
-    public void saveAll(List<FreeSlot> freeSlots) {
-        crud.saveAll(freeSlots.stream().map(FreeSlotEntity::new).collect(toList()));
+    public void saveAll(List<FreeScheduleSlot> scheduleSlots) {
+        crud.saveAll(scheduleSlots.stream().map(FreeSlotEntity::new).collect(toList()));
     }
 
     @Override
@@ -101,10 +104,10 @@ class FreeSlotEntity {
     FreeSlotEntity() {
     }
 
-    public FreeSlotEntity(FreeSlot freeSlot) {
-        this.scheduleId = freeSlot.id().id();
-        this.start = freeSlot.interval().start();
-        this.end = freeSlot.interval().end();
+    public FreeSlotEntity(FreeScheduleSlot scheduleSlot) {
+        this.scheduleId = scheduleSlot.id().id();
+        this.start = scheduleSlot.interval().start();
+        this.end = scheduleSlot.interval().end();
     }
 
     public Long getId() {
@@ -123,8 +126,8 @@ class FreeSlotEntity {
         return end;
     }
 
-    public FreeSlot toSlot() {
-        return FreeSlot.slot(new ScheduleId(scheduleId), DateInterval.fromTo(start, end));
+    public FreeScheduleSlot toSlot() {
+        return freeScheduleSlot(scheduleId(scheduleId), fromTo(start, end));
     }
 
     public Long id() {
