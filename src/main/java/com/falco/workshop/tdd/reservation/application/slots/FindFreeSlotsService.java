@@ -1,4 +1,4 @@
-package com.falco.workshop.tdd.reservation.application;
+package com.falco.workshop.tdd.reservation.application.slots;
 
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;

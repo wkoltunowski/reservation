@@ -1,6 +1,11 @@
 package com.falco.workshop.tdd.reservation;
 
 import com.falco.workshop.tdd.reservation.application.*;
+import com.falco.workshop.tdd.reservation.application.slots.FindFreeSlotsService;
+import com.falco.workshop.tdd.reservation.application.slots.GenerateFreeSlotsService;
+import com.falco.workshop.tdd.reservation.application.slots.ReserveFreeSlotService;
+import com.falco.workshop.tdd.reservation.infrastructure.SynchronousScheduleEvents;
+import com.falco.workshop.tdd.reservation.infrastructure.SynchronousSlotsEvents;
 import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 import com.falco.workshop.tdd.reservation.domain.reservation.*;
 import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
@@ -56,13 +61,14 @@ public class ReservationApplication {
         InMemoryReservationRepository reservationRepository = new InMemoryReservationRepository();
         InMemoryFreeScheduleSlotRepository freeSlotRepository = new InMemoryFreeScheduleSlotRepository();
         InMemoryScheduleRepository scheduleRepository = new InMemoryScheduleRepository();
+        PatientReservationService patientReservationService = new PatientReservationService(reservationRepository, new ReserveFreeSlotService(freeSlotRepository));
         return new ReservationApplication(
                 reservationRepository,
-                new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
+                patientReservationService,
                 new FindFreeSlotsService(freeSlotRepository, scheduleRepository),
-                new DefineScheduleService(scheduleRepository, new ScheduleEvents(
-                        new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
-                        new SlotReservationService(freeSlotRepository, scheduleRepository))),
+                new DefineScheduleService(scheduleRepository,
+                        new SynchronousScheduleEvents(
+                                new GenerateFreeSlotsService(freeSlotRepository, scheduleRepository, new SynchronousSlotsEvents(patientReservationService)))),
                 () -> {
                 }
         );

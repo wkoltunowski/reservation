@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation.application;
 
+import com.falco.workshop.tdd.reservation.application.slots.ReserveFreeSlotService;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
 import com.falco.workshop.tdd.reservation.domain.reservation.ReservationRepository;
@@ -16,30 +17,30 @@ import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReser
 
 @Component
 public class PatientReservationService {
-    private final SlotReservationService slotReservationService;
+    private final ReserveFreeSlotService reserveFreeSlotService;
     private final ReservationRepository reservationRepository;
 
     @Autowired
     public PatientReservationService(ReservationRepository reservationRepository,
-                                     SlotReservationService slotReservationService) {
-        this.slotReservationService = slotReservationService;
+                                     ReserveFreeSlotService reserveFreeSlotService) {
+        this.reserveFreeSlotService = reserveFreeSlotService;
         this.reservationRepository = reservationRepository;
     }
 
     public PatientReservation reserve(PatientSlot patientSlot) {
-        slotReservationService.reserveSlot(patientSlot.slot());
+        reserveFreeSlotService.reserveSlot(patientSlot.slot());
         return reservationRepository.save(reservation(patientSlot));
     }
 
 
-    public void reReserveAllReservations(ScheduleId id) {
+    public void syncReservationsWithSchedule(ScheduleId id) {
         List<PatientReservation> reservations = reservationRepository.findByScheduleId(id);
 
         Map<PatientSlot, PatientReservation> reservationBySlot = new HashMap<>();
         for (PatientReservation reservation : reservations) {
             reservationBySlot.put(reservation.details(), reservation);
         }
-        List<PatientSlot> reservedSlots = slotReservationService.reserveSlots(reservationBySlot.keySet());
+        List<PatientSlot> reservedSlots = reserveFreeSlotService.reserveSlots(reservationBySlot.keySet());
 
         Map<PatientSlot, PatientReservation> notReserved = new HashMap<>(reservationBySlot);
         for (PatientSlot reservedSlot : reservedSlots) {

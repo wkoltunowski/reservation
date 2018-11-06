@@ -1,34 +1,26 @@
-package com.falco.workshop.tdd.reservation.application;
+package com.falco.workshop.tdd.reservation.application.slots;
 
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
-import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
-import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
-import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class SlotReservationService {
+public class ReserveFreeSlotService {
     private final FreeScheduleSlotRepository freeScheduleSlotRepository;
-    private final ScheduleRepository scheduleRepository;
 
     @Autowired
-    public SlotReservationService(FreeScheduleSlotRepository freeScheduleSlotRepository, ScheduleRepository scheduleRepository) {
+    public ReserveFreeSlotService(FreeScheduleSlotRepository freeScheduleSlotRepository) {
         this.freeScheduleSlotRepository = freeScheduleSlotRepository;
-        this.scheduleRepository = scheduleRepository;
     }
 
     public void reserveSlot(VisitSlot scheduleSlot) {
@@ -38,19 +30,6 @@ public class SlotReservationService {
         List<FreeScheduleSlot> newSlots = oldScheduleSlot.cutInterval(scheduleSlot.interval());
         freeScheduleSlotRepository.delete(oldScheduleSlot);
         freeScheduleSlotRepository.saveAll(newSlots);
-    }
-
-
-    public void regenerateSlots(ScheduleId id) {
-        freeScheduleSlotRepository.deleteByScheduleId(id);
-        freeScheduleSlotRepository.saveAll(regenerate(scheduleRepository.findById(id)));
-    }
-
-    private List<FreeScheduleSlot> regenerate(Schedule schedule) {
-        if (!schedule.status().equals(ScheduleStatus.CANCELLED))
-            return schedule.generateSlots(fromTo(LocalDate.of(2018, 1, 1).atTime(0, 0), LocalDate.of(2019, 1, 1).atTime(0, 0)));
-        else
-            return emptyList();
     }
 
 

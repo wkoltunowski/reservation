@@ -16,7 +16,7 @@
 package com.falco.workshop.tdd.reservation.infrastructure.slots;
 
 
-import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
+import com.falco.workshop.tdd.reservation.application.slots.FindFreeSlotsService;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.springframework.beans.factory.annotation.Autowired;

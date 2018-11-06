@@ -1,5 +1,9 @@
 package com.falco.workshop.tdd.reservation.application;
 
+import com.falco.workshop.tdd.reservation.application.slots.GenerateFreeSlotsService;
+import com.falco.workshop.tdd.reservation.application.slots.ReserveFreeSlotService;
+import com.falco.workshop.tdd.reservation.infrastructure.SynchronousScheduleEvents;
+import com.falco.workshop.tdd.reservation.infrastructure.SynchronousSlotsEvents;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
@@ -26,16 +30,16 @@ public class DefineScheduleServiceTest {
     public void setUp() {
         scheduleRepository = new InMemoryScheduleRepository();
         slotRepository = new InMemoryFreeScheduleSlotRepository();
-        final InMemoryReservationRepository reservationRepository = new InMemoryReservationRepository();
-        SlotReservationService slotReservationService = new SlotReservationService(slotRepository, scheduleRepository);
         defineScheduleService = new DefineScheduleService(
                 scheduleRepository,
-                new ScheduleEvents(
-                        new PatientReservationService(
-                                reservationRepository,
-                                slotReservationService
-                        ),
-                        slotReservationService
+                new SynchronousScheduleEvents(
+                        new GenerateFreeSlotsService(
+                                slotRepository,
+                                scheduleRepository,
+                                new SynchronousSlotsEvents(
+                                        new PatientReservationService(
+                                                new InMemoryReservationRepository(),
+                                                new ReserveFreeSlotService(slotRepository))))
                 )
         );
     }
