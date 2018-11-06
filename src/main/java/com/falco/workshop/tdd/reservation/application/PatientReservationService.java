@@ -22,7 +22,6 @@ public class PatientReservationService {
 
     public PatientReservation reserve(PatientSlot patientSlot) {
         slotReservationService.reserveSlot(patientSlot.slot());
-        PatientReservation reservation = reservation(patientSlot);
-        return reservationRepository.save(reservation);
+        return reservationRepository.save(reservation(patientSlot));
     }
 }

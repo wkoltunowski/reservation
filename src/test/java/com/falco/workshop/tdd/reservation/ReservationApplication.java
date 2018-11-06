@@ -76,7 +76,7 @@ public class ReservationApplication {
     }
 
     public List<VisitSlot> findFreeSlots(LocalDateTime startingFrom) {
-        return findFreeSlotsService.findFreeSlots(fromTo(startingFrom, startingFrom.toLocalDate().plusDays(1).atStartOfDay()));
+        return findFreeSlotsService.findFreeSlots(fromTo(startingFrom, startingFrom.toLocalDate().plusDays(1).atStartOfDay()), 50);
     }
 
     public ReservationId reserveSlot(PatientId patientId, VisitSlot scheduleSlot) {

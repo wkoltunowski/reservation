@@ -47,7 +47,7 @@ public class FreeSlotsController {
     @RequestMapping(method = GET)
     @ResponseBody
     public List<FreeSlotJS> freeslots() {
-        return toFreeSlotJS(findMaxNSlots(fromTo(now(), ofDays(45)), 50));
+        return toFreeSlotJS(findMaxNSlots(fromTo(now(), ofDays(45)), 5));
     }
 
     private List<VisitSlot> findMaxNSlots(DateInterval interval, int maxSlotsCount) {
@@ -60,7 +60,7 @@ public class FreeSlotsController {
     }
 
     private List<VisitSlot> findForDay(LocalDate date, int nSlotsCount) {
-        return freeSlotsService.findFreeSlots(fromTo(date.atStartOfDay(), date.atStartOfDay().plusDays(1))).stream().limit(nSlotsCount).collect(toList());
+        return freeSlotsService.findFreeSlots(fromTo(date.atStartOfDay(), date.atStartOfDay().plusDays(1)), nSlotsCount);
     }
 
     private List<FreeSlotJS> toFreeSlotJS(List<VisitSlot> maxNSlots) {

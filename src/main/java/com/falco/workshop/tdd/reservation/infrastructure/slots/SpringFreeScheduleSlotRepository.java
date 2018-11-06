@@ -5,6 +5,9 @@ import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -32,8 +35,8 @@ public class SpringFreeScheduleSlotRepository implements FreeScheduleSlotReposit
     private CrudFreeSlotRepository crud;
 
     @Override
-    public List<FreeScheduleSlot> findIntersecting(DateInterval interval) {
-        return toFreeSlotsList(crud.findIntersecting(interval.start(), interval.end()));
+    public Page<FreeScheduleSlot> findIntersecting(DateInterval interval, Pageable pageable) {
+        return crud.findIntersecting(interval.start(), interval.end(), pageable).map(FreeSlotEntity::toSlot);
     }
 
     private List<FreeScheduleSlot> toFreeSlotsList(Iterable<FreeSlotEntity> slots) {
@@ -71,8 +74,10 @@ public class SpringFreeScheduleSlotRepository implements FreeScheduleSlotReposit
     }
 }
 
-@Component
 interface CrudFreeSlotRepository extends CrudRepository<FreeSlotEntity, Long> {
+    @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.start <= :end and fs.end > :start")
+    Page<FreeSlotEntity> findIntersecting(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
     @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.start <= :end and fs.end > :start")
     Iterable<FreeSlotEntity> findIntersecting(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 

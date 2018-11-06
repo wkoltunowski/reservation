@@ -4,6 +4,8 @@ package com.falco.workshop.tdd.reservation.domain.schedule;
 import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,6 +15,9 @@ import java.util.List;
 import static com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot.freeScheduleSlot;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 public class Schedule {
     private final ScheduleId scheduleId;
@@ -45,6 +50,21 @@ public class Schedule {
             day = day.plusDays(1);
         }
         return scheduleSlots;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, JSON_STYLE);
     }
 
     private List<FreeScheduleSlot> dailySlots(LocalDate day) {

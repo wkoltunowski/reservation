@@ -4,6 +4,10 @@ import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -15,9 +19,13 @@ public class InMemoryFreeScheduleSlotRepository implements FreeScheduleSlotRepos
     private List<FreeScheduleSlot> scheduleSlots = newArrayList();
 
     @Override
-    public List<FreeScheduleSlot> findIntersecting(DateInterval interval) {
+    public Page<FreeScheduleSlot> findIntersecting(DateInterval interval, Pageable pageable) {
         Predicate<FreeScheduleSlot> intersecting = intersecting(interval);
-        return filterToList(intersecting);
+        List<FreeScheduleSlot> results = filterToList(intersecting);
+        int from = ObjectUtils.min(results.size(), pageable.getPageNumber() * pageable.getPageSize());
+        int to = ObjectUtils.min(results.size(), (pageable.getPageNumber() + 1) * pageable.getPageSize());
+        return new PageImpl<>(results.subList(from, to), pageable, results.size());
+
     }
 
     @Override

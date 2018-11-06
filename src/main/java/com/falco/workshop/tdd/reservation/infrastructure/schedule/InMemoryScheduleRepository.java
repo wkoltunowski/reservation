@@ -11,15 +11,24 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
+
 //@Component
 public class InMemoryScheduleRepository implements ScheduleRepository {
 
     private List<Schedule> schedules = new ArrayList<>();
+    private Long nextId = 1L;
 
     @Override
     public Schedule save(Schedule schedule) {
-        schedules.add(schedule);
-        return schedule;
+        Schedule toSave;
+        if (schedule.id() == null)
+            toSave = schedule(scheduleId(nextId++), schedule.workingHours(), schedule.visitDuration());
+        else
+            toSave = schedule;
+        schedules.add(toSave);
+        return toSave;
     }
 
     @Override
