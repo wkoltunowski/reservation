@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 public class DateInterval {
     private final LocalDateTime start;
@@ -53,7 +53,7 @@ public class DateInterval {
 
     @Override
     public String toString() {
-        return reflectionToString(this, SHORT_PREFIX_STYLE);
+        return reflectionToString(this, JSON_STYLE);
     }
 
     public static DateInterval fromTo(LocalDate day, TimeInterval timeInterval) {

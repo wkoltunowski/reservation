@@ -27,6 +27,7 @@ public class InMemoryScheduleRepository implements ScheduleRepository {
             toSave = schedule(scheduleId(nextId++), schedule.workingHours(), schedule.visitDuration());
         else
             toSave = schedule;
+        schedules.removeIf(s->s.id().equals(toSave.id()));
         schedules.add(toSave);
         return toSave;
     }

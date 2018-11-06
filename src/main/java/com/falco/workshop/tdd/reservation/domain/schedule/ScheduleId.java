@@ -8,14 +8,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.io.Serializable;
 
 public class ScheduleId implements Serializable {
-    private Long scheduleId;
+    private Long id;
 
     public Long id() {
-        return scheduleId;
+        return id;
     }
 
     private ScheduleId(long id) {
-        this.scheduleId = id;
+        this.id = id;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ScheduleId implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
     public static ScheduleId scheduleId(int i) {

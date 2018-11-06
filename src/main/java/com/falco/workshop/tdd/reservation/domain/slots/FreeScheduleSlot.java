@@ -12,8 +12,6 @@ import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class FreeScheduleSlot {
     private final ScheduleId scheduleId;
@@ -73,7 +71,7 @@ public class FreeScheduleSlot {
 
     @Override
     public String toString() {
-        return reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "FreeScheduleSlot[scheduleId:" + scheduleId.id() + ", " + "interval" + interval + "]";
     }
 
     public static FreeScheduleSlot freeScheduleSlot(ScheduleId scheduleId, DateInterval interval) {
