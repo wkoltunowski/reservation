@@ -31,7 +31,6 @@ public class DefineScheduleServiceTest {
         defineScheduleService = new DefineScheduleService(
                 scheduleRepository,
                 new ScheduleEvents(
-                        slotRepository,
                         new PatientReservationService(
                                 reservationRepository,
                                 slotReservationService

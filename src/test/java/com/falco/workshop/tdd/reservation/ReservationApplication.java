@@ -60,7 +60,7 @@ public class ReservationApplication {
                 reservationRepository,
                 new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
                 new FindFreeSlotsService(freeSlotRepository, scheduleRepository),
-                new DefineScheduleService(scheduleRepository, new ScheduleEvents(freeSlotRepository,
+                new DefineScheduleService(scheduleRepository, new ScheduleEvents(
                         new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
                         new SlotReservationService(freeSlotRepository, scheduleRepository))),
                 () -> {

@@ -29,6 +29,7 @@ public class Schedule {
         this.scheduleId = scheduleId;
         this.visitDuration = visitDuration;
         this.workingHours = workingHours;
+        this.status = status;
     }
 
     public ScheduleId id() {

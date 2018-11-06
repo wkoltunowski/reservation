@@ -4,6 +4,7 @@ import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
 import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -45,7 +47,10 @@ public class SlotReservationService {
     }
 
     private List<FreeScheduleSlot> regenerate(Schedule schedule) {
-        return schedule.generateSlots(fromTo(LocalDate.of(2018, 1, 1).atTime(0, 0), LocalDate.of(2019, 1, 1).atTime(0, 0)));
+        if (!schedule.status().equals(ScheduleStatus.CANCELLED))
+            return schedule.generateSlots(fromTo(LocalDate.of(2018, 1, 1).atTime(0, 0), LocalDate.of(2019, 1, 1).atTime(0, 0)));
+        else
+            return emptyList();
     }
 
 
