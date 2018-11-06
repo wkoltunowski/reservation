@@ -1,5 +1,6 @@
 package com.falco.workshop.tdd.reservation;
 
+import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientId;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientReservation;
 import com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot;
@@ -11,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,8 +22,8 @@ import static com.falco.workshop.tdd.reservation.domain.reservation.PatientReser
 import static com.falco.workshop.tdd.reservation.domain.reservation.PatientSlot.patientSlot;
 import static com.falco.workshop.tdd.reservation.domain.reservation.ReservationStatus.CANCELLED;
 import static com.falco.workshop.tdd.reservation.domain.reservation.ReservationStatus.RESERVED;
-import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
 import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus.INITIAL;
 import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,8 +37,8 @@ public class ReservationAcceptanceTest {
 
     @Before
     public void setUp() {
-        application = ReservationApplication.startSpring();
-//        application = ReservationApplication.startInMemory();
+//        application = ReservationApplication.startSpring();
+        application = ReservationApplication.startInMemory();
     }
 
     @After
@@ -47,15 +49,6 @@ public class ReservationAcceptanceTest {
     @Test
     public void shouldFindSlots() {
         given(schedule(DOC_SMITH, fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(2), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(3), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(4), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(5), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(6), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(7), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(8), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(9), fromTo("08:00-09:00"), ofMinutes(15)));
-//        given(schedule(scheduleId(10), fromTo("08:00-09:00"), ofMinutes(15)));
         findFreeSlots("2018-09-02 08:00");
         findFreeSlots("2018-09-02 08:00");
         assertThat(findFreeSlots("2018-09-02 08:00")).containsExactly(
@@ -117,7 +110,7 @@ public class ReservationAcceptanceTest {
         ReservationId r1 = reserveSlot(KOWALSKI, visitSlot(DOC_SMITH, "2018-09-02 08:00-08:15"));
         ReservationId r2 = reserveSlot(PIOTROWSKI, visitSlot(DOC_SMITH, "2018-09-02 08:15-08:30"));
         ReservationId r3 = reserveSlot(MALINOWSKI, visitSlot(DOC_SMITH, "2018-09-02 08:30-08:45"));
-        application.updateSchedule(schedule(DOC_SMITH, fromTo("08:00-08:15"), ofMinutes(15)));
+        application.updateSchedule(DOC_SMITH, fromTo("08:00-08:15"), ofMinutes(15));
 
         assertThat(findPatientReservations("2018-09-02")).containsOnly(
                 reservation(r1, patientSlot(KOWALSKI, visitSlot(DOC_SMITH, "2018-09-02 08:00-08:15")), RESERVED),
@@ -129,10 +122,14 @@ public class ReservationAcceptanceTest {
     @Test
     public void shouldRemoveFreeSlotsOnScheduleUpdate() {
         given(schedule(DOC_SMITH, fromTo("08:00-09:15"), ofMinutes(15)));
-        application.updateSchedule(schedule(DOC_SMITH, fromTo("08:00-08:15"), ofMinutes(15)));
+        application.updateSchedule(DOC_SMITH, fromTo("08:00-08:15"), ofMinutes(15));
 
         assertThat(findFreeSlots("2018-09-02 08:00")).containsExactly(
                 visitSlot(DOC_SMITH, "2018-09-02 08:00-08:15"));
+    }
+
+    private Schedule schedule(ScheduleId scheduleId, TimeInterval workingHours, Duration duration) {
+        return Schedule.schedule(scheduleId, workingHours, duration, INITIAL);
     }
 
     private List<PatientReservation> findPatientReservations(String day) {

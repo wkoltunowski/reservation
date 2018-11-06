@@ -2,8 +2,6 @@ package com.falco.workshop.tdd.reservation.domain.reservation;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class PatientReservation {
     private final ReservationId reservationId;
@@ -40,7 +38,7 @@ public class PatientReservation {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return "PatientReservation[" + "reservationId:" + reservationId.id() + ", " + "details:" + details + ", status:" + status + "]";
     }
 
     public static PatientReservation reservation(PatientSlot patientSlot) {

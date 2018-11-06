@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -29,12 +30,16 @@ public class InMemoryFreeScheduleSlotRepository implements FreeScheduleSlotRepos
     }
 
     @Override
-    public List<FreeScheduleSlot> findByScheduleIdIntersecting(ScheduleId id, DateInterval interval) {
-        return filterToList(eqTo(id).and(intersecting(interval)));
+    public Optional<FreeScheduleSlot> findByScheduleIdEnclosing(ScheduleId id, DateInterval interval) {
+        return filterToList(eqTo(id).and(enclosing(interval))).stream().findFirst();
     }
 
     private Predicate<FreeScheduleSlot> intersecting(DateInterval interval) {
-        return s -> interval.intersects(s.interval());
+        return s -> s.interval().intersects(interval);
+    }
+
+    private Predicate<FreeScheduleSlot> enclosing(DateInterval interval) {
+        return s -> s.interval().encloses(interval);
     }
 
     private Predicate<FreeScheduleSlot> eqTo(DateInterval interval) {
@@ -52,7 +57,7 @@ public class InMemoryFreeScheduleSlotRepository implements FreeScheduleSlotRepos
 
     @Override
     public void delete(FreeScheduleSlot scheduleSlot) {
-        scheduleSlots.removeAll(findByScheduleIdIntersecting(scheduleSlot.id(), scheduleSlot.interval()));
+        scheduleSlots.remove(findByScheduleIdEnclosing(scheduleSlot.id(), scheduleSlot.interval()).get());
     }
 
     private List<FreeScheduleSlot> filterToList(Predicate<FreeScheduleSlot> intersecting) {

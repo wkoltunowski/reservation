@@ -1,9 +1,7 @@
 package com.falco.workshop.tdd.reservation;
 
-import com.falco.workshop.tdd.reservation.application.DefineScheduleService;
-import com.falco.workshop.tdd.reservation.application.FindFreeSlotsService;
-import com.falco.workshop.tdd.reservation.application.PatientReservationService;
-import com.falco.workshop.tdd.reservation.application.SlotReservationService;
+import com.falco.workshop.tdd.reservation.application.*;
+import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 import com.falco.workshop.tdd.reservation.domain.reservation.*;
 import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
@@ -14,6 +12,7 @@ import com.falco.workshop.tdd.reservation.infrastructure.slots.InMemoryFreeSched
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,9 +58,11 @@ public class ReservationApplication {
         InMemoryScheduleRepository scheduleRepository = new InMemoryScheduleRepository();
         return new ReservationApplication(
                 reservationRepository,
-                new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository)),
+                new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
                 new FindFreeSlotsService(freeSlotRepository, scheduleRepository),
-                new DefineScheduleService(scheduleRepository, freeSlotRepository, reservationRepository),
+                new DefineScheduleService(scheduleRepository, new ScheduleEvents(freeSlotRepository,
+                        new PatientReservationService(reservationRepository, new SlotReservationService(freeSlotRepository, scheduleRepository)),
+                        new SlotReservationService(freeSlotRepository, scheduleRepository))),
                 () -> {
                 }
         );
@@ -95,7 +96,7 @@ public class ReservationApplication {
         defineScheduleService.deleteSchedule(scheduleId);
     }
 
-    public void updateSchedule(Schedule schedule) {
-        defineScheduleService.updateSchedule(schedule);
+    public void updateSchedule(ScheduleId id, TimeInterval workingHours, Duration visitDuration) {
+        defineScheduleService.updateSchedule(id, workingHours, visitDuration);
     }
 }

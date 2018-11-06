@@ -5,7 +5,6 @@ import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,6 +20,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
@@ -48,8 +48,8 @@ public class SpringFreeScheduleSlotRepository implements FreeScheduleSlotReposit
     }
 
     @Override
-    public List<FreeScheduleSlot> findByScheduleIdIntersecting(ScheduleId id, DateInterval interval) {
-        return toFreeSlotsList(crud.findIntersectingById(id.id(), interval.start(), interval.end()));
+    public Optional<FreeScheduleSlot> findByScheduleIdEnclosing(ScheduleId id, DateInterval interval) {
+        return crud.findEnclosingById(id.id(), interval.start(), interval.end()).map(FreeSlotEntity::toSlot);
     }
 
     @Override
@@ -81,8 +81,8 @@ interface CrudFreeSlotRepository extends CrudRepository<FreeSlotEntity, Long> {
     @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.start <= :end and fs.end > :start")
     Iterable<FreeSlotEntity> findIntersecting(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.start <= :end and fs.end > :start and fs.scheduleId = :scheduleId")
-    Iterable<FreeSlotEntity> findIntersectingById(@Param("scheduleId") Long scheduleId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.start <= :start and fs.end >= :end and fs.scheduleId = :scheduleId")
+    Optional<FreeSlotEntity> findEnclosingById(@Param("scheduleId") Long scheduleId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT fs FROM FreeSlotEntity fs WHERE fs.scheduleId = :scheduleId and fs.start = :start")
     FreeSlotEntity findByScheduleIdStart(@Param("scheduleId") Long scheduleId, @Param("start") LocalDateTime start);

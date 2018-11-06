@@ -6,8 +6,6 @@ import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import static com.falco.workshop.tdd.reservation.domain.DateInterval.fromTo;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
-import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class VisitSlot {
     private final ScheduleId scheduleId;
@@ -39,7 +37,7 @@ public class VisitSlot {
 
     @Override
     public String toString() {
-        return reflectionToString(this, SHORT_PREFIX_STYLE);
+        return "VisitSlot[" + "scheduleId:" + scheduleId.id() + ", " + "interval:" + interval + "]";
     }
 
     public static VisitSlot visitSlot(ScheduleId scheduleId, DateInterval interval) {

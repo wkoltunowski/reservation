@@ -56,4 +56,9 @@ public class InMemoryReservationRepository implements ReservationRepository {
     public PatientReservation findById(ReservationId id) {
         return patientReservations.stream().filter(r -> r.id().equals(id)).findFirst().get();
     }
+
+    @Override
+    public List<PatientReservation> findByIds(List<ReservationId> reservationIds) {
+        return patientReservations.stream().filter(r -> reservationIds.contains(r.id())).collect(toList());
+    }
 }

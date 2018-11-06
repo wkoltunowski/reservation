@@ -17,4 +17,6 @@ public interface ReservationRepository {
     Page<PatientReservation> findAll(Pageable pageable);
 
     PatientReservation findById(ReservationId id);
+
+    List<PatientReservation> findByIds(List<ReservationId> reservationIds);
 }

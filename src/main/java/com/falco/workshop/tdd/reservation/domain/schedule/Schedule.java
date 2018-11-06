@@ -5,13 +5,13 @@ import com.falco.workshop.tdd.reservation.domain.DateInterval;
 import com.falco.workshop.tdd.reservation.domain.TimeInterval;
 import com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus.INITIAL;
 import static com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot.freeScheduleSlot;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -21,10 +21,11 @@ import static org.apache.commons.lang3.builder.ToStringStyle.JSON_STYLE;
 
 public class Schedule {
     private final ScheduleId scheduleId;
-    private final Duration visitDuration;
-    private final TimeInterval workingHours;
+    private Duration visitDuration;
+    private TimeInterval workingHours;
+    private ScheduleStatus status;
 
-    private Schedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration) {
+    private Schedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration, ScheduleStatus status) {
         this.scheduleId = scheduleId;
         this.visitDuration = visitDuration;
         this.workingHours = workingHours;
@@ -42,6 +43,10 @@ public class Schedule {
         return visitDuration;
     }
 
+    public ScheduleStatus status() {
+        return status;
+    }
+
     public List<FreeScheduleSlot> generateSlots(DateInterval interval) {
         List<FreeScheduleSlot> scheduleSlots = new ArrayList<>();
         LocalDate day = interval.start().toLocalDate();
@@ -50,6 +55,22 @@ public class Schedule {
             day = day.plusDays(1);
         }
         return scheduleSlots;
+    }
+
+    private List<FreeScheduleSlot> dailySlots(LocalDate day) {
+        return singletonList(freeScheduleSlot(scheduleId, workingHours.toDateInterval(day)));
+    }
+
+    public void cancel() {
+        this.status = ScheduleStatus.CANCELLED;
+    }
+
+    public void updateVisitDuration(Duration visitDuration) {
+        this.visitDuration = visitDuration;
+    }
+
+    public void updateWorkingHours(TimeInterval workingHours) {
+        this.workingHours = workingHours;
     }
 
     @Override
@@ -67,15 +88,11 @@ public class Schedule {
         return ToStringBuilder.reflectionToString(this, JSON_STYLE);
     }
 
-    private List<FreeScheduleSlot> dailySlots(LocalDate day) {
-        return singletonList(freeScheduleSlot(scheduleId, workingHours.toDateInterval(day)));
+    public static Schedule schedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration, ScheduleStatus status) {
+        return new Schedule(scheduleId, workingHours, visitDuration, status);
     }
 
-    public static Schedule schedule(ScheduleId scheduleId, TimeInterval workingHours, Duration visitDuration) {
-        return new Schedule(scheduleId, workingHours, visitDuration);
-    }
-
-    public static Schedule schedule(TimeInterval workingHours, Duration visitDuration) {
-        return new Schedule(null, workingHours, visitDuration);
+    public static Schedule newSchedule(TimeInterval workingHours, Duration visitDuration) {
+        return new Schedule(null, workingHours, visitDuration, INITIAL);
     }
 }

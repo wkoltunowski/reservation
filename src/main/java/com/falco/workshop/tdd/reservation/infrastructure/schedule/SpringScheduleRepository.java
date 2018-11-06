@@ -3,6 +3,7 @@ package com.falco.workshop.tdd.reservation.infrastructure.schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.Schedule;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleRepository;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import static com.falco.workshop.tdd.reservation.domain.TimeInterval.fromTo;
-import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
 import static java.time.Duration.parse;
 import static java.util.Optional.ofNullable;
 
@@ -56,6 +56,7 @@ class ScheduleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private ScheduleStatus status;
     private String visitDuration;
     private String workingHours;
 
@@ -66,6 +67,7 @@ class ScheduleEntity {
         this.id = ofNullable(schedule.id()).map(ScheduleId::id).orElse(null);
         this.visitDuration = schedule.visitDuration().toString();
         this.workingHours = schedule.workingHours().toString();
+        this.status = schedule.status();
     }
 
     public Long getId() {
@@ -81,7 +83,7 @@ class ScheduleEntity {
     }
 
     public Schedule toSchedule() {
-        return schedule(ofNullable(id).map(ScheduleId::scheduleId).orElse(null), fromTo(workingHours), parse(visitDuration));
+        return Schedule.schedule(ofNullable(id).map(ScheduleId::scheduleId).orElse(null), fromTo(workingHours), parse(visitDuration), status);
     }
 }
 

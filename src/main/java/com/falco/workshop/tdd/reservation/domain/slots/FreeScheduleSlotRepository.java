@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FreeScheduleSlotRepository {
     Page<FreeScheduleSlot> findIntersecting(DateInterval interval, Pageable pageable);
 
-    List<FreeScheduleSlot> findByScheduleIdIntersecting(ScheduleId id, DateInterval interval);
+    Optional<FreeScheduleSlot> findByScheduleIdEnclosing(ScheduleId id, DateInterval interval);
 
     List<FreeScheduleSlot> findByScheduleId(ScheduleId id);
 

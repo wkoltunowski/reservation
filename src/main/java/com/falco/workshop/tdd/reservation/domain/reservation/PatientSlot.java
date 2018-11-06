@@ -3,8 +3,6 @@ package com.falco.workshop.tdd.reservation.domain.reservation;
 import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class PatientSlot {
     private final PatientId patient;
@@ -35,7 +33,7 @@ public class PatientSlot {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return "PatientSlot[patientId:" + patient.id() + ", " + "visitSlot:" + visitSlot + "]";
     }
 
     public static PatientSlot patientSlot(PatientId patientId, VisitSlot visitSlot) {

@@ -65,6 +65,11 @@ public class SpringReservationRepository implements ReservationRepository {
         return crud.findById(id.id()).get().toPatientReservation();
     }
 
+    @Override
+    public List<PatientReservation> findByIds(List<ReservationId> reservationIds) {
+        return reservations(crud.findAllById(reservationIds.stream().map(ReservationId::id).collect(toList())));
+    }
+
     private List<PatientReservation> reservations(Iterable<ReservationEntity> js) {
         return copyOf(js).stream().map(ReservationEntity::toPatientReservation).collect(toList());
     }

@@ -24,10 +24,10 @@ public class InMemoryScheduleRepository implements ScheduleRepository {
     public Schedule save(Schedule schedule) {
         Schedule toSave;
         if (schedule.id() == null)
-            toSave = schedule(scheduleId(nextId++), schedule.workingHours(), schedule.visitDuration());
+            toSave = schedule(scheduleId(nextId++), schedule.workingHours(), schedule.visitDuration(), schedule.status());
         else
             toSave = schedule;
-        schedules.removeIf(s->s.id().equals(toSave.id()));
+        schedules.removeIf(s -> s.id().equals(toSave.id()));
         schedules.add(toSave);
         return toSave;
     }

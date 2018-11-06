@@ -10,8 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.falco.workshop.tdd.reservation.domain.TimeInterval.fromTo;
+import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.newSchedule;
 import static com.falco.workshop.tdd.reservation.domain.schedule.Schedule.schedule;
-import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId.scheduleId;
+import static com.falco.workshop.tdd.reservation.domain.schedule.ScheduleStatus.INITIAL;
 import static com.falco.workshop.tdd.reservation.domain.slots.FreeScheduleSlot.freeScheduleSlot;
 import static java.time.Duration.ofMinutes;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,28 +26,43 @@ public class DefineScheduleServiceTest {
     public void setUp() {
         scheduleRepository = new InMemoryScheduleRepository();
         slotRepository = new InMemoryFreeScheduleSlotRepository();
-        defineScheduleService = new DefineScheduleService(scheduleRepository, slotRepository, new InMemoryReservationRepository());
+        final InMemoryReservationRepository reservationRepository = new InMemoryReservationRepository();
+        SlotReservationService slotReservationService = new SlotReservationService(slotRepository, scheduleRepository);
+        defineScheduleService = new DefineScheduleService(
+                scheduleRepository,
+                new ScheduleEvents(
+                        slotRepository,
+                        new PatientReservationService(
+                                reservationRepository,
+                                slotReservationService
+                        ),
+                        slotReservationService
+                )
+        );
     }
 
     @Test
     public void defineScheduleShouldSaveSchedule() {
-        ScheduleId id = given(schedule(fromTo("08:00-16:00"), ofMinutes(15)));
-        assertThat(scheduleRepository.findById(id)).isEqualTo(schedule(scheduleId(1), fromTo("08:00-16:00"), ofMinutes(15)));
+        ScheduleId id = given(newSchedule(fromTo("08:00-16:00"), ofMinutes(15)));
+        assertThat(scheduleRepository.findById(id)).isEqualTo(schedule(id, fromTo("08:00-16:00"), ofMinutes(15), INITIAL));
     }
 
     @Test
     public void defineScheduleShouldGenerateFreeSlots() {
-        ScheduleId id = given(schedule(fromTo("08:00-16:00"), ofMinutes(15)));
+        ScheduleId id = given(newSchedule(fromTo("08:00-16:00"), ofMinutes(15)));
         assertThat(slotRepository.findByScheduleId(id)).containsExactly(freeScheduleSlot(id, DateInterval.fromTo("2018-09-02 08:00-16:00")));
     }
 
     @Test
-    public void updateSchedule() {
+    public void shouldUpdateSchedule() {
+        ScheduleId id = given(newSchedule(fromTo("08:00-16:00"), ofMinutes(15)));
+        defineScheduleService.updateSchedule(id, fromTo("08:00-10:00"), ofMinutes(15));
+        assertThat(scheduleRepository.findById(id)).isEqualTo(schedule(id, fromTo("08:00-10:00"), ofMinutes(15), INITIAL));
     }
 
     @Test
     public void deleteScheduleShouldRemoveFreeSlots() {
-        ScheduleId id = given(schedule(fromTo("08:00-16:00"), ofMinutes(15)));
+        ScheduleId id = given(newSchedule(fromTo("08:00-16:00"), ofMinutes(15)));
         defineScheduleService.deleteSchedule(id);
         assertThat(slotRepository.findByScheduleId(id)).isEmpty();
     }
