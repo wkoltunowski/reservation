@@ -1,8 +1,12 @@
 package com.falco.workshop.tdd.reservation.domain.reservation;
 
+import com.falco.workshop.tdd.reservation.domain.DateInterval;
+import com.falco.workshop.tdd.reservation.domain.schedule.ScheduleId;
 import com.falco.workshop.tdd.reservation.domain.slots.VisitSlot;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import static com.falco.workshop.tdd.reservation.domain.slots.VisitSlot.visitSlot;
 
 public class PatientSlot {
     private final PatientId patient;
@@ -38,5 +42,8 @@ public class PatientSlot {
 
     public static PatientSlot patientSlot(PatientId patientId, VisitSlot visitSlot) {
         return new PatientSlot(patientId, visitSlot);
+    }
+    public static PatientSlot patientSlot(PatientId patientId, ScheduleId scheduleId,DateInterval interval) {
+        return new PatientSlot(patientId, visitSlot(scheduleId,interval));
     }
 }

@@ -17,6 +17,6 @@ public class SynchronousSlotsEvents implements SlotsEvents {
 
     @Override
     public void slotsRegenerated(ScheduleId id) {
-        patientReservationService.syncReservationsWithSchedule(id);
+        patientReservationService.reReservePatientReservations(id);
     }
 }

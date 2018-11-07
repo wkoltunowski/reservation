@@ -9,9 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -24,12 +23,11 @@ public class ReserveFreeSlotService {
     }
 
     public void reserveSlot(VisitSlot scheduleSlot) {
-        FreeScheduleSlot oldScheduleSlot = freeScheduleSlotRepository.findByScheduleIdEnclosing(scheduleSlot.id(), scheduleSlot.interval())
-                .orElseThrow(() -> new IllegalArgumentException("ScheduleSlot already taken!"));
-        checkArgument(oldScheduleSlot.interval().encloses(scheduleSlot.interval()), "ScheduleSlot already taken!");
-        List<FreeScheduleSlot> newSlots = oldScheduleSlot.cutInterval(scheduleSlot.interval());
-        freeScheduleSlotRepository.delete(oldScheduleSlot);
-        freeScheduleSlotRepository.saveAll(newSlots);
+        FreeScheduleSlot enclosingSlot = freeScheduleSlotRepository
+                .findByScheduleIdEnclosing(scheduleSlot.id(), scheduleSlot.interval())
+                .orElseThrow(SlotTakenException::new);
+        freeScheduleSlotRepository.delete(enclosingSlot);
+        freeScheduleSlotRepository.saveAll(enclosingSlot.cutInterval(scheduleSlot.interval()));
     }
 
 
@@ -42,7 +40,7 @@ public class ReserveFreeSlotService {
     }
 
     private List<VisitSlot> reserveVisitSlots(Set<VisitSlot> visitSlots) {
-        Map<ScheduleId, List<VisitSlot>> slotBySchedyle = visitSlots.stream().collect(Collectors.groupingBy(VisitSlot::id));
+        Map<ScheduleId, List<VisitSlot>> slotBySchedyle = visitSlots.stream().collect(groupingBy(VisitSlot::id));
         List<VisitSlot> reservedSlots = new ArrayList<>();
 
         for (Map.Entry<ScheduleId, List<VisitSlot>> scheduleSlots : slotBySchedyle.entrySet()) {

@@ -33,7 +33,7 @@ public class PatientReservationService {
     }
 
 
-    public void syncReservationsWithSchedule(ScheduleId id) {
+    public void reReservePatientReservations(ScheduleId id) {
         List<PatientReservation> reservations = reservationRepository.findByScheduleId(id);
 
         Map<PatientSlot, PatientReservation> reservationBySlot = new HashMap<>();
