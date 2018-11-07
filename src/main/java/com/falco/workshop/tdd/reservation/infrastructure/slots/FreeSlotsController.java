@@ -52,7 +52,7 @@ public class FreeSlotsController {
 
     private List<VisitSlot> findMaxNSlots(DateInterval interval, int maxSlotsCount) {
         LocalDate startDay = interval.start().toLocalDate();
-        return IntStream.range(1, (int) DAYS.between(interval.start(), interval.end()))
+        return IntStream.range(0, (int) DAYS.between(interval.start(), interval.end()))
                 .mapToObj(day -> findForDay(startDay.plusDays(day), maxSlotsCount))
                 .flatMap(Collection::stream)
                 .limit(maxSlotsCount)
